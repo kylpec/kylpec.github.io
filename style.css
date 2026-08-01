@@ -2004,6 +2004,16 @@ html.light .illustration-wrap.gb-spot-wrap{ background:var(--panel); }
 .case-stats-row .contributors{ margin-top:0; }
 .case-stats-row .stat-grid{ margin-top:0; }
 
+/* wraps .stat-grid + .stat-note together so the note can center itself
+   against the stats' own width instead of the full body column. On
+   mobile this is full width (matching .case-stats-row's other child,
+   .contributors, and giving .stat-grid's text-align:center something to
+   actually center within — a shrink-to-fit flex item has no extra space
+   to center into). From 640px it shrinks back to its content width so
+   .case-stats-row's space-between can still push it to the right edge. */
+.stat-col{ width:100%; }
+@media (min-width:640px){ .stat-col{ width:auto; } }
+
 .stat-grid{
   display:grid; grid-template-columns:1fr; gap:32px;
   margin-top:64px; text-align:center;
@@ -2029,8 +2039,10 @@ html.light .illustration-wrap.gb-spot-wrap{ background:var(--panel); }
    centered instead of left-aligned and colored --ink-soft instead of
    full-strength --ink so it reads as secondary. max-width/margin reset
    to override the inherited .project-detail-body > p{ max-width:680px }
-   rule, which was capping this to a narrow left-aligned box instead of
-   centering across the full content width. */
+   rule. Lives inside .stat-col (see above) rather than as a standalone
+   paragraph below the whole row, so text-align:center here centers it
+   against the stats' own width — full row width on mobile, just the
+   stat-grid's width on desktop — instead of the entire body column. */
 /* qualified as ".project-detail-body p.stat-note" (class+class+tag)
    rather than just ".stat-note" — .project-detail-body p and
    .project-detail-body > p (font-size:16px, max-width:680px) are each
