@@ -1022,15 +1022,22 @@ h2.section-label.no-divider::before{ display:none; }
 /* client-side password gate — see script.js initPasswordGates(). Left-
    aligned like the rest of the site, contained to a readable column
    rather than spanning full width. */
-.password-gate{ padding:80px 0 120px; max-width:480px; }
+/* Centered on screen (horizontally via margin:auto, vertically by making
+   the gate itself a flex container sized to at least the viewport height
+   below the fixed nav) rather than following the site's usual left-aligned
+   convention — this is a one-off interstitial screen, not regular page
+   content, so it reads better as a centered "stop" moment. */
+.password-gate{
+  min-height:calc(100vh - var(--nav-height));
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center;
+  padding:40px 0; max-width:480px; margin:0 auto;
+}
 .password-gate h1{
   font-family:var(--sans); font-weight:400; font-size:32px; line-height:1.05;
-  letter-spacing:-.03em; color:var(--ink); margin-bottom:12px;
+  letter-spacing:-.03em; color:var(--ink); margin-bottom:24px;
 }
-.password-gate p{
-  font-family:var(--sans); font-size:16px; line-height:1.6; color:var(--ink-soft); margin-bottom:24px;
-}
-.password-gate-form{ display:flex; gap:10px; flex-wrap:wrap; }
+.password-gate-form{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
 .password-gate-form input{
   font-family:var(--sans); font-size:15px; padding:12px 14px; border:1px solid var(--ink); border-radius:6px;
   background:transparent; color:var(--ink); min-width:200px; flex:1; box-sizing:border-box;
@@ -1312,6 +1319,20 @@ h2.section-label.no-divider::before{ display:none; }
 }
 @media (min-width:640px){ .masonry-gallery{ column-count:2; } }
 @media (min-width:1024px){ .masonry-gallery{ column-count:4; } }
+
+/* Executions grid (SmileDirectClub) — same column-count masonry technique
+   as .masonry-gallery above (native aspect ratios, no cropping, each item
+   just flows into the shortest column), but with its own column counts:
+   2 up on mobile, 5 from tablet, 6 from desktop, per this section's own
+   spec rather than the 2/2/4 the base gallery uses elsewhere. */
+.executions-masonry{
+  column-count:2; column-gap:12px; margin-top:32px;
+}
+.executions-masonry img{
+  width:100%; height:auto; display:block; margin-bottom:12px; break-inside:avoid; background:var(--panel); border-radius:6px;
+}
+@media (min-width:640px){ .executions-masonry{ column-count:5; } }
+@media (min-width:1024px){ .executions-masonry{ column-count:6; } }
 
 /* spot illustration examples — per brand guidelines these sit on a white
    card regardless of page theme; in dark mode the card flips to black
@@ -1911,6 +1932,25 @@ html.light .illustration-wrap.gb-spot-wrap{ background:var(--panel); }
    Inter to match every other label on the site. clamp() keeps the number
    from overflowing its column on narrow phones instead of needing a
    separate mobile font-size rule. */
+/* Pairs the project credits with the results stats — credits pinned to
+   the left, stats pushed toward the right rather than stretched full-
+   width, so there's a deliberate gap between the two instead of them
+   reading as one continuous row. justify-content:space-between (not a
+   gap-only flex) is what pushes .stat-grid to the far right edge while
+   .contributors stays at its own natural width on the left.
+   flex-wrap lets the two simply stack (credits above stats) below
+   640px, the same breakpoint .stat-grid itself already uses to go from
+   1 column to 3 — at that width there isn't room for both a credits
+   block and 3 side-by-side stats on one line. Both children get their
+   own margin-top reset to 0 here, since this wrapper now supplies the
+   spacing above the whole row that each used to supply individually. */
+.case-stats-row{
+  display:flex; flex-wrap:wrap; justify-content:space-between; align-items:start;
+  gap:40px 64px; margin-top:64px;
+}
+.case-stats-row .contributors{ margin-top:0; }
+.case-stats-row .stat-grid{ margin-top:0; }
+
 .stat-grid{
   display:grid; grid-template-columns:1fr; gap:32px;
   margin-top:64px; text-align:center;
@@ -2068,6 +2108,17 @@ html:not(.light) .identity-showcase--full .logo-swap .logo-swap-dark{ opacity:1;
    white (transparent areas stay transparent). A plain invert(1) alone
    would just shift the navy to an off-white/tan rather than true white. */
 html:not(.light) .identity-showcase--full img[src*="firstamerican-logo"]{
+  filter: brightness(0) invert(1);
+}
+
+/* SmileDirectClub logo — same solid-color-SVG-via-<img> filter trick as
+   First American above: the source SVG is a single flat purple
+   (#5700ff), so brightness(0) crushes it to solid black first (alpha
+   preserved), then invert(1) flips that to solid white. Light mode gets
+   no filter at all, so the SVG's own native purple shows through
+   untouched — exactly the "stays purple in light mode, turns white in
+   dark mode" split this logo needs, with no separate light/dark asset. */
+html:not(.light) .identity-showcase--full img[src*="smiledirectclub-logo"]{
   filter: brightness(0) invert(1);
 }
 

@@ -346,6 +346,10 @@ document.addEventListener('DOMContentLoaded', initPasswordGates);
 // once) picks up the newly-injected elements so this content gets the
 // same enhancements as every other project page.
 //
+// Deliberately asks for the password on every visit — nothing is
+// remembered between page loads (not even for the rest of the browser
+// session), so returning to this page later always re-prompts.
+//
 // Usage: <div data-encrypted-gate data-gate-content="idOfEmptyContainer">
 //        + <script type="application/json" id="idOfEmptyContainer-cipher">
 //            {"salt":"...","iv":"...","ciphertext":"...","iterations":200000}
@@ -361,10 +365,6 @@ function initEncryptedGates(){
     try { payload = JSON.parse(cipherEl.textContent); }
     catch(e){ return; }
 
-    // sessionStorage, not localStorage — remembers the unlock for the
-    // rest of this browser session (so a refresh doesn't re-prompt) but
-    // doesn't persist indefinitely on a shared/public machine.
-    const storageKey = 'gate-pw:' + (gate.id || contentId);
     const form = gate.querySelector('form');
     const input = gate.querySelector('input[type="password"]');
     const error = gate.querySelector('.password-gate-error');
@@ -392,7 +392,6 @@ function initEncryptedGates(){
         content.innerHTML = new TextDecoder().decode(plainBuf);
         content.hidden = false;
         gate.hidden = true;
-        sessionStorage.setItem(storageKey, password);
         if(typeof initScrollReveal === 'function') initScrollReveal();
         if(typeof initParallax === 'function') initParallax();
         return true;
@@ -401,11 +400,6 @@ function initEncryptedGates(){
         // decrypt itself fail rather than silently returning garbage.
         return false;
       }
-    }
-
-    const remembered = sessionStorage.getItem(storageKey);
-    if(remembered){
-      tryUnlock(remembered).then(ok => { if(!ok) sessionStorage.removeItem(storageKey); });
     }
 
     if(form){

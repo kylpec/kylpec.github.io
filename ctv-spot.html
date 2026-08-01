@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<script>
+  /* Restores the user's last-chosen theme before first paint, so
+     navigating between pages doesn't flash light and then flip to dark.
+     Runs as an inline, render-blocking script in <head> (not from
+     script.js, which loads at the end of body — too late to prevent the
+     flash) and only needs to handle the dark case, since every page's
+     <html> already ships with class="light" as its default. */
+  (function(){
+    try{
+      if(localStorage.getItem('theme') === 'dark'){
+        document.documentElement.classList.remove('light');
+      }
+    }catch(e){}
+  })();
+</script>
+<title>CTV Spot · Kyle Peck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Geist+Pixel:ELSH@1&family=Roboto+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="site-nav">
+    <button class="theme-toggle mode-toggle" aria-label="Switch to dark mode" onclick="toggleTheme(this)">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4.3"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(45 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(90 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(135 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(180 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(225 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(270 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(315 12 12)"/></svg>
+      </button>
+      <span class="icon-btn-label icon-btn-label--mode" aria-hidden="true">MODE</span>
+      <button class="theme-toggle scroll-top" aria-label="Scroll to top">
+        <svg class="icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+      </button>
+      <span class="icon-btn-label icon-btn-label--top" aria-hidden="true">TOP</span>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html" aria-current="page">Work</a>
+        <a href="play.html">Play</a>
+        <a href="about.html">About</a>
+      </nav>
+      <span class="nav-current-dot" aria-hidden="true"></span>
+  </header>
+  <a class="brand-mark" href="index.html">K<span class="kern-left">Y</span>LE PECK</a>
+
+  <main>
+    <div class="project-detail-head">
+      <h1>CTV Spot</h1>
+      <p class="project-subtitle">A 30-second Connected TV commercial for First American, built around a DIY mishap and the lesson it leaves behind.</p>
+
+      <div class="pills">
+        <span class="tag-lg">Creative Concept</span>
+        <span class="tag-lg">Storyboarding</span>
+        <span class="tag-lg">Art Direction</span>
+        <span class="tag-lg">Video Production</span>
+        <span class="tag-lg">Post-Production</span>
+      </div>
+    </div>
+
+    <div class="project-detail-hero" style="--hero-ratio:3230/1312;">
+      <img src="images/ctv-hero.jpg" alt="Close-up of a woman with a shocked expression holding scissors up to her hair in a bathroom mirror" data-parallax="90" data-parallax-buffer="12">
+    </div>
+
+    <div class="project-detail-body">
+      <div class="split-section no-col-divider split-section--brand">
+        <div class="split-col">
+          <h2 class="section-label">Brand</h2>
+          <div class="identity-showcase identity-showcase--full">
+            <img src="images/firstamerican-logo.svg" alt="First American logo">
+          </div>
+        </div>
+        <div class="split-col">
+          <h2 class="section-label">Overview</h2>
+          <p>First American needed a Connected TV spot that could stand out in a crowded streaming ad break while still feeling true to the brand. The goal was to create something memorable and human rather than another straightforward insurance message.</p>
+          <p>The concept, &ldquo;Lessons Learned,&rdquo; uses a relatable DIY mishap to introduce the value of getting it right the first time in a lighter, more human way.</p>
+          <div class="split-col-stack no-divider">
+            <h2 class="section-label">My Role</h2>
+            <p>I developed the concept and storyboarded the spot, then helped shape its execution through casting and filming. I worked alongside the production company to direct the shoot and oversee the edit through the final cut.</p>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-label no-divider">TV Spot</h2>
+      <div class="case-media">
+        <video controls preload="metadata" poster="images/ctv-lessons-learned-poster.jpg">
+          <source src="images/ctv-lessons-learned.mp4" type="video/mp4">
+        </video>
+      </div>
+
+      <div class="case-stats-row">
+        <dl class="contributors">
+          <dt>Creative Direction</dt>
+          <dd>Kyle Peck, Michelle Simkin</dd>
+          <dt>Production</dt>
+          <dd>Sweet Bread Co.</dd>
+        </dl>
+        <div class="stat-grid">
+          <div class="stat">
+            <div class="stat-number" data-count="4.9" data-suffix="M">0M</div>
+            <p class="stat-label">Impressions</p>
+          </div>
+          <div class="stat">
+            <div class="stat-number" data-count="3.3" data-suffix="M">0M</div>
+            <p class="stat-label">People Reached</p>
+          </div>
+          <div class="stat">
+            <div class="stat-number" data-count="94" data-suffix="%">0%</div>
+            <p class="stat-label">Video Completion Rate</p>
+          </div>
+        </div>
+      </div>
+      <p class="stat-note">Based on the first two months since launch.</p>
+    </div>
+    <nav class="project-pagination" aria-label="Project navigation">
+      <a class="project-pagination-link project-pagination-prev" href="enterprise-brand-system.html">
+        <span class="ppl-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span>
+        <span class="ppl-text"><span class="ppl-label">Previous</span><span class="ppl-title">Enterprise Brand System</span></span>
+      </a>
+      <a class="project-pagination-link project-pagination-next" href="editorial-campaign.html">
+        <span class="ppl-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></span>
+        <span class="ppl-text"><span class="ppl-label">Next</span><span class="ppl-title">Editorial Campaign</span></span>
+      </a>
+    </nav>
+  </main>
+</div>
+
+<footer class="site-foot">
+  <span class="site-signature">kylpec.com</span>
+  <div class="foot-group">
+    <div class="foot-left"><span class="clock-time">7:42:00 PM</span></div>
+    <div class="foot-social">
+      <a href="mailto:kylejopeck@gmail.com">Email</a>
+      <a href="https://linkedin.com/in/kylejpeck" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://instagram.com/bykylpec" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
