@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#F8F3EA" id="theme-color-meta">
 <script>
   /* Restores the user's last-chosen theme before first paint, so
      navigating between pages doesn't flash light and then flip to dark.
@@ -15,6 +16,8 @@
     try{
       if(localStorage.getItem('theme') === 'dark'){
         document.documentElement.classList.remove('light');
+        var tc = document.getElementById('theme-color-meta');
+        if(tc) tc.setAttribute('content', '#0E0E0E');
       }
     }catch(e){}
   })();

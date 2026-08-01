@@ -79,6 +79,13 @@ html{ color-scheme: dark only; }
 html.light{ color-scheme: light only; }
 html,body{background:var(--bg-start); color:var(--ink); font-family:var(--sans); transition:background-color .1s linear;}
 html{ overflow-x:hidden; }
+/* Kills the elastic "rubber-band" bounce at the top/bottom of the page
+   on a fast scroll or trackpad fling — that's the browser's own overscroll
+   effect, not something the site was doing, but it's suppressible via
+   this standard property (Chrome/Firefox since 2022, Safari since v16,
+   so effectively universal at this point). overscroll-behavior-y rather
+   than the shorthand since only vertical bounce is the issue here. */
+html,body{ overscroll-behavior-y:none; }
 body{
   -webkit-font-smoothing:antialiased; font-size:16px; line-height:1.5;
   position:relative; overflow-x:hidden;

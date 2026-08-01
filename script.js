@@ -277,6 +277,12 @@ function updateBgFade(){
   const color = isLightMode() ? '#F8F3EA' : '#0E0E0E';
   document.documentElement.style.backgroundColor = color;
   document.body.style.backgroundColor = color;
+  // keeps iOS/Android's own browser-chrome color (status bar, address
+  // bar) matched to the page background so it doesn't read as a visibly
+  // different-colored strip above the site — same color values as above,
+  // just applied to the theme-color meta tag rather than an element.
+  const themeColorMeta = document.getElementById('theme-color-meta');
+  if(themeColorMeta) themeColorMeta.setAttribute('content', color);
 }
 updateBgFade();
 document.addEventListener('DOMContentLoaded', updateBgFade);
