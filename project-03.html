@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<script>
+  /* Restores the user's last-chosen theme before first paint, so
+     navigating between pages doesn't flash light and then flip to dark.
+     Runs as an inline, render-blocking script in <head> (not from
+     script.js, which loads at the end of body — too late to prevent the
+     flash) and only needs to handle the dark case, since every page's
+     <html> already ships with class="light" as its default. */
+  (function(){
+    try{
+      if(localStorage.getItem('theme') === 'dark'){
+        document.documentElement.classList.remove('light');
+      }
+    }catch(e){}
+  })();
+</script>
+<title>Ethnographic Research · Kyle Peck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Geist+Pixel:ELSH@1&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="site-nav">
+    <button class="theme-toggle mode-toggle" aria-label="Switch to dark mode" onclick="toggleTheme(this)">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4.3"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(45 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(90 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(135 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(180 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(225 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(270 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(315 12 12)"/></svg>
+      </button>
+      <span class="icon-btn-label icon-btn-label--mode" aria-hidden="true">MODE</span>
+      <button class="theme-toggle scroll-top" aria-label="Scroll to top">
+        <svg class="icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+      </button>
+      <span class="icon-btn-label icon-btn-label--top" aria-hidden="true">TOP</span>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html" aria-current="page">Work</a>
+        <a href="play.html">Play</a>
+        <a href="about.html">About</a>
+      </nav>
+      <span class="nav-current-dot" aria-hidden="true"></span>
+  </header>
+  <a class="brand-mark" href="index.html">K<span class="kern-left">Y</span>LE PECK</a>
+
+  <main>
+    <div class="project-detail-head">
+      <h1>Ethnographic Research</h1>
+      <p class="project-subtitle">Documenting the lived experience of drivers for a global ride-sharing company through field research, photography, and editorial design.</p>
+
+      <div class="pills">
+        <span class="tag-lg">Qualitative Market Research</span>
+        <span class="tag-lg">Multi-City Fieldwork</span>
+        <span class="tag-lg">Storytelling</span>
+        <span class="tag-lg">Photography</span>
+        <span class="tag-lg">Presentation Design</span>
+        <span class="tag-lg">Editorial Design</span>
+      </div>
+    </div>
+
+    <div class="project-detail-hero" style="--hero-ratio:3000/900;">
+      <img src="images/ethno-hero.jpg" alt="View from the back seat of a car showing a driver with hands on the wheel, a phone mounted on the dashboard, and a street of shops visible through the windshield" data-parallax="90" data-parallax-buffer="12">
+    </div>
+
+    <div class="project-detail-body">
+      <div class="split-section no-col-divider split-section--brand">
+        <div class="split-col">
+          <h2 class="section-label">Brand</h2>
+          <div class="identity-showcase identity-showcase--full">
+            <img src="images/uber-logo.svg" alt="Uber logo">
+          </div>
+        </div>
+        <div class="split-col">
+          <h2 class="section-label">Overview</h2>
+          <p>Uber commissioned a multi-city ethnographic study to better understand how driving fit into participants&rsquo; lives, how they experienced the platform, and how those experiences differed across markets.</p>
+          <p>The work combined in-home interviews, contextual observation, in-car research, and group panels, to then translate the findings into an executive research deck, printed photo journal, and a qualitative video summary.</p>
+          <div class="split-col-stack no-divider">
+            <h2 class="section-label">My Role</h2>
+            <p>As the sole designer and visual documentarian, I worked alongside a market researcher in the field to record participants, environments, and moments surrounding the research. I then shaped the material into a cohesive visual narrative, designing the presentation, editorial photo journal, illustrations, and video summary used to communicate the findings to the client.</p>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-label no-divider">Research Synthesis</h2>
+      <p>I worked to translate hours of interviews and observation into a clear narrative around motivations, tradeoffs, behaviors, and market-specific differences.</p>
+      <p>Participant quotes, photography, and concise analysis were brought together to keep the findings grounded in lived experience rather than reduced to generalized user types.</p>
+      <div class="photo-grid cols-4">
+        <img src="images/ethno-synthesis-01.jpg" alt="Research synthesis presentation slide, image 1 of 24">
+        <img src="images/ethno-synthesis-02.jpg" alt="Research synthesis presentation slide, image 2 of 24">
+        <img src="images/ethno-synthesis-03.jpg" alt="Research synthesis presentation slide, image 3 of 24">
+        <img src="images/ethno-synthesis-04.jpg" alt="Research synthesis presentation slide, image 4 of 24">
+        <img src="images/ethno-synthesis-05.jpg" alt="Research synthesis presentation slide, image 5 of 24">
+        <img src="images/ethno-synthesis-06.jpg" alt="Research synthesis presentation slide, image 6 of 24">
+        <img src="images/ethno-synthesis-07.jpg" alt="Research synthesis presentation slide, image 7 of 24">
+        <img src="images/ethno-synthesis-08.jpg" alt="Research synthesis presentation slide, image 8 of 24">
+        <img src="images/ethno-synthesis-09.jpg" alt="Research synthesis presentation slide, image 9 of 24">
+        <img src="images/ethno-synthesis-10.jpg" alt="Research synthesis presentation slide, image 10 of 24">
+        <img src="images/ethno-synthesis-11.jpg" alt="Research synthesis presentation slide, image 11 of 24">
+        <img src="images/ethno-synthesis-12.jpg" alt="Research synthesis presentation slide, image 12 of 24">
+        <img src="images/ethno-synthesis-13.jpg" alt="Research synthesis presentation slide, image 13 of 24">
+        <img src="images/ethno-synthesis-14.jpg" alt="Research synthesis presentation slide, image 14 of 24">
+        <img src="images/ethno-synthesis-15.jpg" alt="Research synthesis presentation slide, image 15 of 24">
+        <img src="images/ethno-synthesis-16.jpg" alt="Research synthesis presentation slide, image 16 of 24">
+        <img src="images/ethno-synthesis-17.jpg" alt="Research synthesis presentation slide, image 17 of 24">
+        <img src="images/ethno-synthesis-18.jpg" alt="Research synthesis presentation slide, image 18 of 24">
+        <img src="images/ethno-synthesis-19.jpg" alt="Research synthesis presentation slide, image 19 of 24">
+        <img src="images/ethno-synthesis-20.jpg" alt="Research synthesis presentation slide, image 20 of 24">
+        <img src="images/ethno-synthesis-21.jpg" alt="Research synthesis presentation slide, image 21 of 24">
+        <img src="images/ethno-synthesis-22.jpg" alt="Research synthesis presentation slide, image 22 of 24">
+        <img src="images/ethno-synthesis-23.jpg" alt="Research synthesis presentation slide, image 23 of 24">
+        <img src="images/ethno-synthesis-24.jpg" alt="Research synthesis presentation slide, image 24 of 24">
+      </div>
+
+      <h2 class="section-label">Field Documentation</h2>
+      <p>The research extended beyond what participants said. I documented their homes, vehicles, neighborhoods, routines, and interactions with the platform to preserve the context surrounding each interview.</p>
+      <p>The photography was approached as research material rather than decorative imagery, capturing details that could deepen or complicate the verbal findings.</p>
+      <div class="scatter-grid">
+        <div class="scatter-frame"><img src="images/ethno-field-01.jpg" alt="Smartphone mounted on a car dashboard displaying the Uber driver app set to offline over a map" data-parallax="42" data-parallax-buffer="12"></div>
+        <div class="scatter-frame"><img src="images/ethno-field-02.jpg" alt="Field documentation photograph, image 2 of 8" data-parallax="56" data-parallax-buffer="12"></div>
+        <div class="scatter-frame"><img src="images/ethno-field-03.jpg" alt="Field documentation photograph, image 3 of 8" data-parallax="36" data-parallax-buffer="12"></div>
+        <div class="scatter-frame"><img src="images/ethno-field-04.jpg" alt="Field documentation photograph, image 4 of 8" data-parallax="50" data-parallax-buffer="12"></div>
+        <div class="scatter-frame"><img src="images/ethno-field-05.jpg" alt="Field documentation photograph, image 5 of 8" data-parallax="64" data-parallax-buffer="12"></div>
+        <div class="scatter-frame"><img src="images/ethno-field-06.jpg" alt="Field documentation photograph, image 6 of 8" data-parallax="40" data-parallax-buffer="12"></div>
+        <div class="scatter-frame"><img src="images/ethno-field-07.jpg" alt="Field documentation photograph, image 7 of 8" data-parallax="54" data-parallax-buffer="12"></div>
+        <div class="scatter-frame"><img src="images/ethno-field-08.jpg" alt="Field documentation photograph, image 8 of 8" data-parallax="46" data-parallax-buffer="12"></div>
+      </div>
+
+      <h2 class="section-label">Photo Journal</h2>
+      <p>I designed a printed photo journal as a more immersive companion to the findings. Its pacing, scale, and editorial treatment gave the photography room to hold details and emotional cues that would have been lost in an executive presentation.</p>
+      <p>The result was a tangible record of the fieldwork that complemented the analytical report without duplicating it.</p>
+      <div class="photo-grid cols-3">
+        <img src="images/ethno-journal-01.jpg" alt="Photo journal spread, image 1 of 14">
+        <img src="images/ethno-journal-02.jpg" alt="Photo journal spread, image 2 of 14">
+        <img src="images/ethno-journal-03.jpg" alt="Photo journal spread, image 3 of 14">
+        <img src="images/ethno-journal-04.jpg" alt="Photo journal spread, image 4 of 14">
+        <img src="images/ethno-journal-05.jpg" alt="Photo journal spread, image 5 of 14">
+        <img src="images/ethno-journal-06.jpg" alt="Photo journal spread, image 6 of 14">
+        <img src="images/ethno-journal-07.jpg" alt="Photo journal spread, image 7 of 14">
+        <img src="images/ethno-journal-08.jpg" alt="Photo journal spread, image 8 of 14">
+        <img src="images/ethno-journal-09.jpg" alt="Photo journal spread, image 9 of 14">
+        <img src="images/ethno-journal-10.jpg" alt="Photo journal spread, image 10 of 14">
+        <img src="images/ethno-journal-11.jpg" alt="Photo journal spread, image 11 of 14">
+        <img src="images/ethno-journal-12.jpg" alt="Photo journal spread, image 12 of 14">
+        <img src="images/ethno-journal-13.jpg" alt="Photo journal spread, image 13 of 14">
+        <img src="images/ethno-journal-14.jpg" alt="Photo journal spread, image 14 of 14">
+      </div>
+    </div>
+    <nav class="project-pagination" aria-label="Project navigation">
+      <a class="project-pagination-link project-pagination-prev" href="project-04.html">
+        <span class="ppl-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span>
+        <span class="ppl-text"><span class="ppl-label">Previous</span><span class="ppl-title">Editorial Campaign</span></span>
+      </a>
+      <a class="project-pagination-link project-pagination-next" href="project-02.html">
+        <span class="ppl-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></span>
+        <span class="ppl-text"><span class="ppl-label">Next</span><span class="ppl-title">Product Design</span></span>
+      </a>
+    </nav>
+  </main>
+</div>
+
+<footer class="site-foot">
+  <span class="site-signature">kylpec.com</span>
+  <div class="foot-group">
+    <div class="foot-left"><span class="clock-time">7:42:00 PM</span></div>
+    <div class="foot-social">
+      <a href="mailto:kylejopeck@gmail.com">Email</a>
+      <a href="https://linkedin.com/in/kylejpeck" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://instagram.com/bykylpec" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

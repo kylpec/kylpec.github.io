@@ -1,0 +1,2131 @@
+/* ============================================================
+   CONVENTIONS — read this before editing full-bleed elements,
+   dividers, or anything using mix-blend-mode.
+
+   1. FULL-BLEED / DIVIDER LINES: .wrap has padding:0 var(--gutter),
+      so any element nested inside it that needs to span the TRUE
+      viewport width (dividers, full-bleed backgrounds) cannot just
+      use width:100% — it'll stop at the gutter. Always use the
+      --vw100 custom property instead (kept in sync by
+      setViewportWidthVar() in script.js, using clientWidth so it
+      excludes the scrollbar). Standard pattern:
+        width:calc(var(--vw100, 100vw) + 2px); position:relative;
+        left:50%; right:50%;
+        margin-left:calc(var(--vw100, 100vw) / -2);
+        margin-right:calc(var(--vw100, 100vw) / -2);
+      This only centers correctly if the element's containing block
+      is itself symmetric/centered on the page — asymmetric margins
+      (e.g. a negative margin on only one side) will throw off the
+      left:50% math. See .hero or .project-pagination below for
+      working examples.
+
+   2. mix-blend-mode:difference: an element using this can only
+      "see" the true page backdrop if IT is the outermost
+      position:fixed box in its chain. If it's nested inside a
+      DIFFERENT already-fixed ancestor, the blend gets trapped
+      against that ancestor and renders flat/uninverted. Fix is to
+      make the blended element its own independently-fixed sibling
+      rather than a descendant (see .nav-links, .icon-btn-label).
+
+   3. --gutter is the site's standard side margin, responsive via
+      the media queries just below. Use it for any left/right inset
+      that should line up with the rest of the page.
+
+   4. Global reset below applies box-sizing:border-box to
+      everything, so padding/border are already included in any
+      width you set.
+   ============================================================ */
+:root{
+  --bg:#0E0E0E;
+  --bg-start:#161616;
+  --ink:#FFFFFF;
+  --ink-soft:#A3A3A6;
+  --line:#3A3A3C;
+  --panel:#2E2E30;
+  --muted:#A5A5A8;
+  --hover-wash: color-mix(in srgb, var(--ink) 10%, transparent);
+  --accent-blue:#0066FF;
+  --mono:'Inter', sans-serif;
+  --sans:'Inter', sans-serif;
+  --serif-accent:'Xanh Mono', monospace;
+  --pixel:'Geist Pixel', monospace;
+  --mono2:'Roboto Mono', monospace;
+  --gutter:11px;
+  --nav-height:64px; /* fallback until setNavHeightVar (script.js) measures the real value */
+}
+@media (min-width:640px){ :root{ --gutter:16px; } }
+@media (min-width:1024px){ :root{ --gutter:28px; } }
+@media (min-width:1440px){ :root{ --gutter:36px; } }
+
+html.light{
+  --bg:#F8F3EA;
+  --bg-start:#FFFFFF;
+  --ink:#131110;
+  --ink-soft:#4A4A4D;
+  --line:#E3DED2;
+  --panel:#EFE8DA;
+  --muted:#8A8A8D;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{ color-scheme: dark only; }
+html.light{ color-scheme: light only; }
+html,body{background:var(--bg-start); color:var(--ink); font-family:var(--sans); transition:background-color .1s linear;}
+html{ overflow-x:hidden; }
+body{
+  -webkit-font-smoothing:antialiased; font-size:16px; line-height:1.5;
+  position:relative; overflow-x:hidden;
+}
+body::before{
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:1;
+  opacity:.05; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+a{color:inherit; text-decoration:none; cursor:default;}
+a, button, .theme-toggle{ -webkit-tap-highlight-color:transparent; }
+button, .project-card a, .foot-social a, .nav-links a{ cursor:default; }
+a:focus-visible, button:focus-visible{ outline:3px solid var(--ink); outline-offset:3px; }
+@media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+
+/* ---- SCROLL REVEAL ----
+   [data-reveal] is added at runtime (see initScrollReveal in script.js) to
+   a broad, centrally-defined set of page "components" — hero, project
+   cards, section headings/copy/media inside each case study body, etc —
+   rather than hand-written into every page's HTML. That means if JS ever
+   fails to load or run, the attribute is simply never added, this
+   selector never matches anything, and every element renders normally at
+   full opacity — the animation is a pure enhancement, never a dependency
+   for content being visible. Same easing/duration already used for the
+   project-card hover scale elsewhere in this file, so the motion language
+   stays consistent between hover and scroll-reveal. */
+[data-reveal]{
+  opacity:0; transform:translateY(48px);
+  transition:opacity 1.2s cubic-bezier(.16,1,.3,1), transform 1.2s cubic-bezier(.16,1,.3,1);
+}
+[data-reveal].reveal-in{ opacity:1; transform:translateY(0); }
+
+/* left-aligned, not centered — on very wide screens .wrap used to center
+   itself (equal margins both sides), which pulled all of its plain-flow
+   content (body copy, cards) to the right relative to the full-bleed
+   elements (headings, dividers, split-section, hero, nav) that stay
+   flush at --gutter from the true left edge. Dropping the auto margin
+   keeps everything flush-left and consistent, with any leftover space
+   on very wide screens landing on the right only. */
+.wrap{ max-width:none; margin:0; padding:0 var(--gutter) 0; }
+
+/* reserves the space the fixed nav no longer occupies in normal flow
+   (see .nav-links below) so page content starts right where the nav
+   bar ends instead of sliding underneath it. */
+main{ padding-top:var(--nav-height); display:block; }
+
+/* header.site-nav is now just a plain (non-fixed) wrapper — both of its
+   children position themselves independently (.theme-toggle is fixed to
+   the bottom-right; .nav-links below is fixed to the top), so the header
+   itself contributes no layout/paint of its own. It's kept only for
+   semantic grouping. */
+header.site-nav{
+  display:flex; align-items:center;
+}
+
+/* Anchored to the viewport, same treatment as .theme-toggle, so the nav
+   links stay put while the page scrolls underneath instead of scrolling
+   away with the content. Fixed positioning takes it out of normal flow
+   entirely, so main gets padding-top:var(--nav-height) above to reserve
+   the equivalent space (var(--nav-height) is kept in sync with this
+   element's real rendered height via setNavHeightVar in script.js, so it
+   doesn't drift out of sync if the nav's own padding/gutter ever changes
+   at a breakpoint). Background stays transparent on purpose (kept here,
+   not omitted, so it's clear this was a deliberate choice) — the links
+   float directly over whatever scrolls underneath rather than sitting on
+   a solid bar.
+   mix-blend-mode:difference lives on THIS element (the actual fixed,
+   top-level box — same structural role as .brand-mark) rather than on
+   the child <a> tags. Nesting the blend one level down, inside .nav-links
+   while IT was nested inside a fixed header.site-nav, meant the <a> tags
+   were only ever blending against emptiness inside that inner fixed
+   ancestor and never actually reaching the real scrolled page content
+   behind it — the links rendered as flat white no matter what was
+   underneath. Moving both the fixed positioning AND the blend mode onto
+   .nav-links itself (so it's a direct, un-nested fixed box, exactly like
+   .brand-mark) fixes that: white differenced against any backdrop color
+   yields that color's own inverse, so the links stay legible over
+   whatever's beneath them without needing separate light/dark values. The
+   <a> children just inherit color:#fff (color inherits by default; the
+   global a{color:inherit} rule handles it) and ride along with the
+   parent's blend. */
+.nav-links{
+  position:fixed; top:0; left:0; right:0; z-index:60;
+  padding:var(--gutter) var(--gutter) var(--gutter); box-sizing:border-box;
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
+  column-gap:16px;
+  color:#fff; mix-blend-mode:difference;
+}
+.nav-links a:nth-child(1){ justify-self:start; }
+.nav-links a:nth-child(2){ justify-self:center; }
+.nav-links a:nth-child(3){ justify-self:end; }
+.nav-links a{
+  font-family:var(--sans); font-size:12px; font-weight:500; line-height:1;
+  letter-spacing:.01em; display:flex; align-items:center;
+  text-decoration:underline; text-underline-offset:3px;
+  transition:opacity .15s ease;
+}
+.nav-links a:hover, .nav-links a:focus-visible{ opacity:.6; }
+
+/* "current page" indicator dot. This used to be a ::after on the active
+   link itself, but that made it a descendant of .nav-links — and since
+   .nav-links carries mix-blend-mode:difference on the whole box, its
+   entire rendered content (link text AND the dot) gets flattened into one
+   layer before blending, so the dot's own color got swept into the
+   difference effect along with the text instead of staying a fixed blue.
+   A parent's mix-blend-mode can't be selectively opted out of by a
+   descendant — the only fix is to not be a descendant of the blended box
+   at all. So this is now a separate element, a sibling of .nav-links,
+   fixed-positioned independently (immune to the blend) and aligned under
+   whichever link is active via JS (positionNavDot in script.js), since
+   that link's on-screen position shifts across breakpoints. */
+.nav-current-dot{
+  position:fixed; z-index:60; top:0; left:0;
+  width:5px; height:5px; border-radius:50%; background:#0066FF;
+  pointer-events:none; transform:translateX(-50%);
+}
+
+/* pinned to the bottom-left of the viewport, mirroring .theme-toggle's
+   bottom-right anchor — a small persistent signature that stays put while
+   the page scrolls underneath it. Matching .theme-toggle's own height
+   (26px) via flex centering, rather than just line-height, keeps the two
+   vertically centered against each other regardless of this element's
+   font-size — no need to hand-tune a top offset to compensate.
+
+   mix-blend-mode:difference inverts against whatever's directly beneath
+   it as the page scrolls, rather than sitting on a fixed color — a plain
+   white or black wouldn't guarantee contrast against every image/panel
+   color it could end up over. color is hardcoded white (not var(--ink))
+   because difference blending already does the light/dark adaptation on
+   its own — white differenced against any color produces that color's
+   inverse, so it reads correctly against both themes without needing to
+   switch the source color itself. */
+.brand-mark{
+  position:fixed; bottom:var(--gutter); left:var(--gutter); z-index:70;
+  height:26px; display:flex; align-items:center;
+  font-family:var(--sans); font-weight:700; font-size:14px; letter-spacing:-.01em;
+  color:#fff; mix-blend-mode:difference; line-height:1;
+  text-decoration:none;
+  /* No offsetting negative margin here (on purpose): the border's own
+     left edge is what should land flush at --gutter, lined up with the
+     footer's clock/links below it — not the "K" inside the padding. So
+     left:var(--gutter) above applies straight to the border box, and the
+     text sits wherever the padding pushes it in from there. */
+  padding:4px 8px;
+  /* currentColor rather than a hardcoded value: the whole element is
+     already under mix-blend-mode:difference, so a border in the same
+     white used for the text gets differenced right along with it,
+     staying legible against any backdrop the same way the text does —
+     the same reasoning .theme-toggle's border would use var(--ink)
+     directly if it didn't already sit on its own opaque background. */
+  border:1px solid currentColor;
+  transition:background-color .15s ease;
+}
+/* manual kern: nudges just the K/Y pair closer together, since CSS
+   letter-spacing applies uniformly across every letter and can't target
+   one pair on its own. */
+.brand-mark .kern-left{ margin-left:-0.03em; }
+
+/* Hover/focus abandons the mix-blend-mode trick for a fixed, solid look
+   (same blue used for .project-meta's hover and .nav-current-dot) —
+   difference-blending a background color would make it shift depending on
+   what's behind it, which fights the point of a deliberate brand-blue
+   fill. mix-blend-mode:normal cancels the inherited difference so both
+   the background and the now-plain-white text render as-is, unaffected
+   by backdrop or light/dark theme. */
+.brand-mark:hover, .brand-mark:focus-visible{
+  background-color:#0066FF; color:#fff; mix-blend-mode:normal;
+}
+
+/* centered counterpart to .brand-mark/.theme-toggle — same fixed bottom
+   row (height:26px + align-items:center matches their own vertical
+   centering trick) but horizontally centered instead of pinned to an
+   edge. Plain --ink-soft rather than the difference-blend treatment: this
+   is meant to read as a quiet signature, not a legibility-critical
+   control, so it doesn't need to guarantee contrast the way the
+   interactive elements on either side of it do. */
+/* centered within the footer bar itself (position:relative on
+   footer.site-foot below gives it something to center against) — plain
+   in-flow-adjacent text, not fixed, so it scrolls away with the rest of
+   the page instead of floating over content like .brand-mark/.theme-toggle.
+   Anchored to the footer's own bottom edge via the same --gutter offset
+   .brand-mark/.theme-toggle use from the viewport's bottom edge (rather
+   than vertically centered in the footer), so once you've scrolled all
+   the way down — footer bottom flush with viewport bottom — this lines
+   up exactly with where those fixed buttons are sitting. */
+.site-signature{
+  position:absolute; left:50%; bottom:var(--gutter); transform:translateX(-50%);
+  font-family:var(--sans); font-size:12px; color:var(--ink-soft);
+  pointer-events:none;
+}
+
+/* pinned to the bottom-right of the viewport, floating above content on
+   every page — same treatment as the fixed nav-links group up top. */
+.theme-toggle{
+  display:flex; align-items:center; justify-content:center;
+  width:26px; height:26px; min-width:26px; border:1px solid var(--ink);
+  background:var(--bg); padding:0; color:var(--ink);
+  overflow:hidden;
+  transition:background-color .2s ease, border-color .3s ease, color .2s ease;
+  position:fixed; bottom:var(--gutter); right:var(--gutter); z-index:70;
+}
+/* same brand-blue fill used for .brand-mark/.project-meta/.nav-current-dot
+   on hover, rather than the subtler --bg/--ink tint this used to use —
+   color:#fff here flows straight into the icon via currentColor (see
+   .theme-toggle svg below), so the moon/sun/arrow icon turns white to
+   match without needing its own separate hover rule. */
+.theme-toggle:hover, .theme-toggle:focus-visible{ background:#0066FF; color:#fff; }
+.theme-toggle svg{
+  position:absolute; width:13px; height:13px;
+  transition:opacity .5s cubic-bezier(.4,0,.2,1), transform .5s cubic-bezier(.4,0,.2,1);
+}
+.theme-toggle .icon-moon{ opacity:1; transform:translate(0,0) scale(1); }
+.theme-toggle .icon-sun{ opacity:0; transform:translate(100%,100%) scale(.45); }
+html.light .theme-toggle .icon-moon{ opacity:0; transform:translate(-100%,-100%) scale(.45); }
+html.light .theme-toggle .icon-sun{ opacity:1; transform:translate(0,0) scale(1); }
+
+/* Scroll-to-top button: same class as .theme-toggle so it automatically
+   gets the identical circle/border/background/hover treatment (including
+   the shared `.theme-toggle svg` sizing rule for its icon), just shifted
+   one circle-width + gap to the left so it sits beside the toggle instead
+   of on top of it. Hidden by default (JS in script.js adds .is-visible
+   once the user has scrolled past 20% of the scrollable page height) —
+   opacity/pointer-events rather than display:none so it can fade in/out
+   smoothly instead of popping. */
+.scroll-top{
+  right:calc(var(--gutter) + 26px + 10px);
+  opacity:0; pointer-events:none;
+  transition:opacity .25s ease, background-color .2s ease, border-color .3s ease;
+}
+.scroll-top.is-visible{ opacity:1; pointer-events:auto; }
+
+/* Hover-hint label ("TOP" above the scroll button, "MODE" above the
+   theme toggle). Same white + mix-blend-mode:difference trick as
+   .brand-mark/.nav-links, so the label stays legible over whatever it
+   ends up floating above — needed here because a plain fixed color, like
+   these used before, doesn't guarantee contrast against every possible
+   backdrop the same way a flat var(--ink) never did for those either.
+
+   This is a SIBLING of its button in the HTML, not a child, and
+   position:fixed with its own viewport-relative coordinates (via
+   --vw100, not the button's own box) rather than position:absolute
+   anchored to the button. Both of those are required, not stylistic
+   choices: mix-blend-mode on an element nested inside a *different*
+   already-fixed ancestor doesn't reach past that ancestor to the real
+   page content (this is exactly the bug .nav-links hit when it was
+   still nested inside the old fixed header.site-nav — see the CSS
+   comment above .nav-links for the full explanation). Since
+   .mode-toggle/.scroll-top are themselves position:fixed, the label has
+   to live outside of them, as an independent fixed sibling, to blend
+   correctly — same structural fix, applied here for the same reason.
+   Shared type styling across both buttons; each gets its own modifier
+   class below for its own fixed position, since that math differs per
+   button (--top sits one circle-width + gap further left than --mode). */
+.icon-btn-label{
+  position:fixed; z-index:70; pointer-events:none;
+  font-family:var(--sans); font-size:9px; font-weight:600; letter-spacing:.08em;
+  color:#fff; mix-blend-mode:difference; white-space:nowrap;
+  opacity:0; transform:translate(-50%, 4px);
+  transition:opacity .2s ease, transform .2s ease;
+}
+.icon-btn-label--mode{
+  bottom:calc(var(--gutter) + 26px + 6px);
+  left:calc(var(--vw100, 100vw) - var(--gutter) - 13px);
+}
+.icon-btn-label--top{
+  bottom:calc(var(--gutter) + 26px + 6px);
+  left:calc(var(--vw100, 100vw) - var(--gutter) - 26px - 10px - 13px);
+}
+@media (hover:hover){
+  .mode-toggle:hover ~ .icon-btn-label--mode,
+  .mode-toggle:focus-visible ~ .icon-btn-label--mode{ opacity:1; transform:translate(-50%, 0); }
+  .scroll-top:hover ~ .icon-btn-label--top,
+  .scroll-top:focus-visible ~ .icon-btn-label--top{ opacity:1; transform:translate(-50%, 0); }
+}
+
+/* ---- HOME ---- */
+.eyebrow{ font-family:var(--sans); font-size:12px; color:var(--ink-soft); letter-spacing:.02em; margin-bottom:12px; }
+.hero{
+  width:calc(var(--vw100, 100vw) + 2px); position:relative; left:50%; right:50%;
+  margin-left:calc(var(--vw100, 100vw) / -2); margin-right:calc(var(--vw100, 100vw) / -2);
+  padding:32px var(--gutter) 0; box-sizing:border-box;
+}
+.hero h1{
+  font-family:var(--sans); font-weight:500; font-size:32px; line-height:1.00;
+  letter-spacing:-.02em; max-width:440px;
+}
+.hero h1.hero-paragraph{
+  font-family:var(--sans); font-weight:400; font-size:44px;
+  line-height:1.05; letter-spacing:-.05em; max-width:none;
+}
+.hero-tagline{
+  font-family:var(--sans); font-weight:500; font-size:16px; letter-spacing:.01em;
+  color:var(--ink); margin-top:18px;
+}
+/* Emphasis/accent word styling. Whatever display font is used here, keep
+   line-height:1 and plain inline (no display:inline-block or
+   vertical-align override) so the accent word's own baseline stays
+   aligned with the surrounding body text instead of floating — that's
+   what fixed the "line looks taller/misaligned" issue.
+   Known-good recipe for Beth Ellen specifically: font-size:0.72em (its
+   ascenders/descenders are much taller than Inter's at the same nominal
+   size, so it needs to run smaller to avoid disturbing line spacing,
+   even with line-height:1). Restore font-size:0.72em if reverting to
+   Beth Ellen. */
+.accent{
+  font-family:var(--serif-accent); font-style:italic; font-weight:400;
+  letter-spacing:-0.06em; color:var(--ink); line-height:1;
+}
+.hero .location-line{
+  font-family:var(--sans); font-size:12.5px; color:var(--ink);
+  margin-top:36px; padding-bottom:120px; letter-spacing:.02em;
+  display:flex; align-items:center; gap:5px;
+}
+.location-line svg{ flex-shrink:0; }
+/* same location line reused below the About intro copy — the homepage
+   version's big padding-bottom exists only to push the "Selected Work"
+   section down the page, so it's not reused here; this scoped rule just
+   carries over the font/icon styling. */
+.about-intro .location-line{
+  font-family:var(--sans); font-size:12.5px; color:var(--ink); letter-spacing:.02em;
+  display:flex; align-items:center; gap:5px; margin-top:48px;
+}
+
+.tag{
+  display:inline-block; font-family:var(--sans); font-size:12px; font-weight:500;
+  color:var(--ink); background:var(--panel); border:none; border-radius:20px; padding:6px 12px;
+  letter-spacing:.01em;
+}
+.tag-lg{
+  display:inline-block; font-family:var(--sans); font-size:18px; font-weight:500;
+  color:var(--ink); background:var(--panel); border:none; border-radius:26px; padding:12px 20px;
+  letter-spacing:.01em;
+}
+
+.work-head{
+  padding:14px var(--gutter); margin-top:0; display:flex; justify-content:space-between; align-items:center;
+  width:calc(var(--vw100, 100vw) + 2px); position:relative; left:50%; right:50%; margin-left:calc(var(--vw100, 100vw) / -2); margin-right:calc(var(--vw100, 100vw) / -2);
+  box-sizing:border-box; border-top:1px solid var(--ink);
+}
+.work-head h2{ font-family:var(--sans); font-size:20px; font-weight:700; letter-spacing:-.005em; line-height:1; margin:0; }
+.work-head span{ font-family:var(--sans); font-size:11px; color:var(--ink); line-height:1; margin:0; }
+
+/* image-forward cards, uniform size — no project outweighs another.
+   Full-bleed at every width so a single column never sits centered with
+   dead space on either side; only the internal gutter (via .project-meta)
+   insets the text, matching .work-head above it. */
+.work-list{
+  padding:0; display:flex; flex-direction:column; gap:0; margin-top:0;
+  border-top:1px solid var(--ink);
+  width:calc(var(--vw100, 100vw) + 2px); position:relative; left:50%; right:50%;
+  margin-left:calc(var(--vw100, 100vw) / -2); margin-right:calc(var(--vw100, 100vw) / -2);
+  box-sizing:border-box;
+}
+.project-card{ position:relative; border-bottom:1px solid var(--ink); }
+.project-card.no-bottom-border{ border-bottom:none; }
+.project-card a{ display:block; min-height:44px; position:relative; }
+.project-img-wrap{ overflow:hidden; border-radius:0; position:relative; }
+.project-img{
+  width:100%; aspect-ratio:4/3; border-radius:0; display:block;
+  object-fit:cover; transition:transform .5s cubic-bezier(.16,1,.3,1);
+}
+.project-card a:hover .project-img, .project-card a:focus-visible .project-img{ transform:scale(1.025); }
+
+/* subtle blue tint over the thumbnail on hover, echoing the solid blue
+   used on the number/name strip below it — a light wash, not a block color. */
+.project-img-wrap::after{
+  content:''; position:absolute; inset:0; background:#0066FF; opacity:0;
+  transition:opacity .15s ease; pointer-events:none;
+}
+.project-card a:hover .project-img-wrap::after, .project-card a:focus-visible .project-img-wrap::after{
+  opacity:0.12;
+}
+
+/* project-01 thumbnail — fixed brand colors (Foundation Blue + white),
+   not theme-adaptive, since this is a literal brand-color swatch rather
+   than page chrome. Logo kept modest and centered, not filling the frame. */
+.project-thumb-brand{ background:#141D3A; display:flex; align-items:center; justify-content:center; }
+.project-thumb-logo{ display:block; width:34%; height:auto; }
+@media (min-width:640px){ .project-thumb-logo{ width:28%; } }
+.project-meta{
+  display:flex; justify-content:flex-start; align-items:center; gap:var(--gutter);
+  padding:12px var(--gutter);
+  border-top:1px solid var(--ink);
+  transition:background-color .15s ease;
+}
+.project-card a:hover .project-meta, .project-card a:focus-visible .project-meta{
+  background-color:#0066FF;
+}
+.project-card a:hover .project-meta .project-number,
+.project-card a:hover .project-meta .tag,
+.project-card a:focus-visible .project-meta .project-number,
+.project-card a:focus-visible .project-meta .tag{
+  color:#fff;
+}
+.project-number{ font-family:var(--mono2); font-weight:400; font-size:14px; color:var(--ink); letter-spacing:0; transition:color .15s ease; }
+
+/* project card label reads as a title next to the number, not a pill/tag
+   like the detail-page discipline badges. */
+.project-meta .tag{
+  display:inline; font-family:var(--sans); font-size:14px; font-weight:600;
+  color:var(--ink); background:none; border:none; border-radius:0; padding:0;
+  letter-spacing:0; line-height:1; transition:color .15s ease;
+}
+
+@media (min-width:1024px){
+  .work-list{
+    display:grid; grid-template-columns:repeat(2, 1fr);
+    gap:0; margin-top:0; padding:0;
+  }
+  .project-card{ border-right:1px solid var(--ink); }
+}
+@media (min-width:1024px) and (max-width:1439px){
+  .project-card:nth-child(2n){ border-right-color:transparent; }
+}
+@media (min-width:1440px){
+  .work-list{ grid-template-columns:repeat(3, 1fr); }
+  .project-card:nth-child(3n){ border-right-color:transparent; }
+}
+
+/* prev/next project nav, sitting between the last content block of a case
+   study and the footer. Two links, arrow pointing the direction of travel
+   (left points back toward the previous project, right points forward),
+   each showing a small "Previous"/"Next" eyebrow above the actual project
+   title so it's clear where the link goes before you click it. */
+/* the whole bar is pulled out to the true viewport edges (same --vw100
+   technique as .hero above), then padding puts both edges back at the
+   normal gutter inset, same as the rest of the page. Because the box
+   itself now spans edge-to-edge, a plain border-top is already a
+   full-bleed divider — no separate pseudo-element/math needed. */
+.project-pagination{
+  width:calc(var(--vw100, 100vw) + 2px); position:relative; left:50%; right:50%;
+  margin-left:calc(var(--vw100, 100vw) / -2); margin-right:calc(var(--vw100, 100vw) / -2);
+  box-sizing:border-box; padding:32px var(--gutter) 32px var(--gutter);
+  border-top:1px solid var(--ink); margin-top:80px;
+  display:grid; grid-template-columns:1fr 1fr; gap:16px;
+}
+/* sized small enough that both columns keep their side-by-side layout
+   (never stack) all the way down to the narrowest mobile widths — long
+   titles just truncate with the ellipsis below rather than needing a
+   stacked fallback. */
+.project-pagination-link{
+  display:flex; align-items:center; gap:8px; text-decoration:none; color:var(--ink);
+  min-width:0;
+}
+/* flex-direction:row-reverse flips which edge "flex-start"/"flex-end" mean —
+   flex-start is the right edge here, so that's what packs this block against
+   the true right edge; flex-end would (and did) push it to the left instead. */
+.project-pagination-next{ grid-column:2; justify-content:flex-start; flex-direction:row-reverse; text-align:right; }
+.ppl-arrow{ display:flex; flex:none; color:var(--ink-soft); transition:transform .2s ease; }
+.ppl-arrow svg{ width:14px; height:14px; }
+.project-pagination-link:hover .ppl-arrow, .project-pagination-link:focus-visible .ppl-arrow{ color:var(--ink); }
+.project-pagination-prev:hover .ppl-arrow, .project-pagination-prev:focus-visible .ppl-arrow{ transform:translateX(-4px); }
+.project-pagination-next:hover .ppl-arrow, .project-pagination-next:focus-visible .ppl-arrow{ transform:translateX(4px); }
+.ppl-text{ display:flex; flex-direction:column; min-width:0; }
+.ppl-label{
+  font-family:var(--sans); font-size:9px; font-weight:600; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-soft);
+}
+.ppl-title{
+  font-family:var(--sans); font-size:13px; font-weight:600; margin-top:3px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  transition:color .15s ease;
+}
+.project-pagination-link:hover .ppl-title, .project-pagination-link:focus-visible .ppl-title{ color:var(--ink-soft); }
+
+footer.site-foot{
+  position:relative;
+  border-top:1px solid var(--ink); padding:56px var(--gutter) 56px; margin-top:0;
+  display:flex; flex-direction:row; justify-content:space-between; align-items:center; gap:16px;
+  width:100%;
+  font-family:var(--sans); font-size:12px; color:var(--ink);
+}
+.foot-group{ display:flex; flex-direction:column; gap:14px; }
+.foot-left{ display:flex; align-items:baseline; gap:8px; }
+.clock-time{ font-family:var(--mono2); font-weight:500; font-size:12px; letter-spacing:.03em; color:var(--ink); text-transform:uppercase; }
+.foot-social{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.foot-social a{
+  color:var(--ink); min-height:44px; display:flex; align-items:center;
+  text-decoration:underline; text-underline-offset:3px; transition:color .15s ease;
+}
+.foot-social a:hover, .foot-social a:focus-visible{ color:var(--muted); }
+
+/* ---- ABOUT ---- */
+.about-intro{
+  padding-top:32px;
+  width:calc(var(--vw100, 100vw) + 2px); position:relative; left:50%; right:50%;
+  margin-left:calc(var(--vw100, 100vw) / -2); margin-right:calc(var(--vw100, 100vw) / -2); box-sizing:border-box;
+  padding-left:var(--gutter); padding-right:var(--gutter);
+}
+.about-intro p{
+  font-family:var(--sans); font-weight:400; font-size:44px; line-height:1.05;
+  letter-spacing:-.05em; color:var(--ink); margin-bottom:24px;
+}
+.photo-block{
+  width:100%; max-width:340px; aspect-ratio:4/3; background:var(--panel); border-radius:0; margin:40px 0 0;
+  overflow:hidden;
+}
+.about-photo-img{ width:100%; height:100%; object-fit:cover; display:block; }
+.about-photo-secondary{
+  aspect-ratio:2905/2374; margin:32px 0; border:1px solid var(--ink); box-sizing:border-box;
+  border-radius:8px;
+}
+@media (min-width:640px){ .about-photo-secondary{ max-width:480px; } }
+@media (min-width:1024px){ .about-photo-secondary{ max-width:600px; } }
+.about-p{ font-family:var(--sans); font-size:16px; line-height:1.7; color:var(--ink-soft); margin-bottom:18px; }
+.about-p b{ color:var(--ink); font-weight:600; }
+
+/* the text stays in plain normal document flow (no width/left/margin
+   full-bleed trickery) so it always lines up exactly with the body copy
+   below it — that positioning previously depended on --vw100 matching
+   the viewport precisely, which made it fragile. The divider line is a
+   separate ::before that spans full-bleed on its own; being a 1px
+   cosmetic line, it doesn't need to be pixel-perfect the way text does. */
+h2.section-label{
+  position:relative;
+  font-family:var(--sans); font-size:13px; font-weight:700; letter-spacing:.08em; color:var(--ink);
+  margin-top:120px; margin-bottom:20px; padding-top:72px; text-transform:uppercase;
+}
+h2.section-label::before{
+  content:''; position:absolute; top:0; left:50%;
+  width:calc(var(--vw100, 100vw) + 2px); height:1px; background:var(--ink);
+  margin-left:calc(var(--vw100, 100vw) / -2);
+}
+h2.section-label.no-divider::before{ display:none; }
+.pills{ display:flex; flex-wrap:wrap; gap:8px; }
+
+/* Capabilities + Experience share a row on tablet/desktop, stack on mobile */
+.cap-exp-grid{
+  display:block; margin-top:120px; padding-top:72px; padding-bottom:72px;
+  width:calc(var(--vw100, 100vw) + 2px); position:relative; left:50%; right:50%;
+  margin-left:calc(var(--vw100, 100vw) / -2); margin-right:calc(var(--vw100, 100vw) / -2); box-sizing:border-box;
+  padding-left:var(--gutter); padding-right:var(--gutter);
+  border-top:1px solid var(--ink);
+}
+.cap-exp-grid h2.section-label{ margin-top:0; padding-top:0; }
+.cap-exp-grid h2.section-label::before{ display:none; }
+.cap-col{ padding-bottom:32px; }
+/* on mobile, .exp-col sits inside .cap-exp-grid's gutter padding, so a
+   plain border-top only spans the inset content width, not the true
+   screen edges. Same full-bleed trick used for .case-split's divider:
+   an absolutely-positioned pseudo-element sized via --vw100 instead of
+   a border. Disabled at 640px+ in favor of the vertical divider between
+   columns. */
+.exp-col{
+  padding-top:32px; margin-top:32px; position:relative;
+}
+.exp-col::before{
+  content:''; position:absolute; top:0; left:50%;
+  width:calc(var(--vw100, 100vw) + 2px); height:1px; background:var(--ink);
+  margin-left:calc(var(--vw100, 100vw) / -2);
+}
+@media (min-width:640px){
+  .cap-exp-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0; align-items:stretch; }
+  .cap-col{ padding-right:28px; padding-bottom:0; }
+  .exp-col{
+    padding-top:0; margin-top:0;
+    padding-left:28px;
+  }
+  .exp-col::before{ display:none; }
+  .cap-exp-grid::after{
+    content:''; position:absolute; top:0; bottom:0; left:50%;
+    width:1px; background:var(--ink);
+  }
+}
+@media (min-width:1024px){
+  /* grid-auto-flow:column (with explicit rows) fills the first column
+     top-to-bottom before moving to the second, instead of grid's default
+     row-major flow which would alternate left/right per row. That keeps
+     the 7 roles in one continuous chronological read: most recent 4 down
+     column 1, then the oldest 3 down column 2, ending with FatCat
+     Strategies at the bottom right. Row count is ceil(7 roles / 2 cols) —
+     update this if a role is added or removed from .exp-list. */
+  .exp-list{
+    display:grid; grid-template-columns:1fr 1fr; grid-template-rows:repeat(4, auto);
+    grid-auto-flow:column; gap:0 28px; align-items:start;
+  }
+}
+
+.cv-row{ padding:8px 0; }
+.cv-title{ font-family:var(--sans); font-weight:700; font-size:16px; line-height:1.15; color:var(--ink); }
+.cv-company{
+  font-family:var(--sans); font-weight:500; font-size:14px; line-height:1.3; color:var(--ink);
+  margin-top:3px;
+}
+.cv-dates{
+  font-family:var(--mono2); font-weight:400; font-size:12px; line-height:1.3; color:var(--ink);
+  letter-spacing:.02em; margin-top:4px;
+}
+
+.contact-block{ border:1px solid var(--ink); border-radius:4px; padding:24px; margin-top:16px; }
+.contact-block .label{ font-family:var(--sans); font-size:12px; color:var(--ink); margin-bottom:8px; }
+.contact-email{
+  font-family:var(--sans); font-weight:600; font-size:18px;
+  text-decoration:underline; text-underline-offset:3px; transition:color .15s ease;
+}
+.contact-email:hover, .contact-email:focus-visible{ color:var(--muted); }
+
+/* ---- PROJECT DETAIL ---- */
+.back-link{
+  display:inline-flex; align-items:center; gap:6px; font-family:var(--sans);
+  font-size:13px; font-weight:500; color:var(--ink-soft); margin-top:24px;
+  text-decoration:underline; text-underline-offset:3px;
+}
+.back-link:hover, .back-link:focus-visible{ color:var(--ink); }
+.project-detail-head .pills{ margin-top:20px; }
+.project-detail-head .tag-lg{
+  font-size:13px; padding:8px 14px; border-radius:20px;
+}
+.project-detail-head{
+  padding-top:56px;
+}
+.project-detail-head .tag{ margin-bottom:16px; }
+.project-detail-head h1{
+  font-family:var(--sans); font-weight:400; font-size:32px; line-height:1.05;
+  letter-spacing:-.03em; color:var(--ink); max-width:720px;
+}
+.project-hero{
+  width:100%; aspect-ratio:16/9; overflow:hidden; margin-top:32px; background:var(--panel);
+}
+.project-hero img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+/* hero image between the title block and the body copy — full width of the
+   actual screen at every breakpoint (same vw100 technique as the title
+   block above it), with the same left/right gutter inset as the rest of
+   the page copy. .wrap's max-width doesn't apply here, so it stays flush
+   with the title/pills and the divider below even on very wide screens.
+   Shown at its native (wide) aspect ratio from tablet up; on mobile it's
+   cropped a bit taller so it takes up more of the screen. */
+.project-detail-hero{
+  margin-top:48px; background:var(--panel);
+  border:1px solid var(--ink); border-radius:16px; box-sizing:border-box;
+  aspect-ratio:4/3; overflow:hidden;
+  width:calc(var(--vw100, 100vw) - (2 * var(--gutter)));
+  position:relative; left:50%;
+  margin-left:calc((var(--vw100, 100vw) / -2) + var(--gutter));
+}
+/* the img is zoomed 30% larger than its frame in both dimensions equally
+   (not just height) and centered — smaller than the scatter/motif photos'
+   44% zoom elsewhere, since a hero should still read as "the whole
+   photo" at rest rather than a tight crop. That leaves less headroom
+   for [data-parallax] (script.js), which is why the hero imgs also carry
+   data-parallax-buffer="12" in HTML — it tells the script to cap the
+   shift against this smaller 15%-per-side buffer instead of the default
+   assumption tuned for the 44%-zoom photos. Scaling both axes equally
+   keeps the crop symmetric and preserves the photo's own aspect ratio.
+   The frame (this container, overflow:hidden) stays put in the page
+   flow; only the photo moves. */
+.project-detail-hero img{
+  position:absolute; top:-15%; left:-15%;
+  width:130%; height:130%; object-fit:cover; display:block;
+}
+/* Some heroes (e.g. a flat mosaic of small thumbnails/text, as opposed to
+   a single photo) have no parallax buffer to spare — the source image is
+   already at its native resolution, and the standard 130% oversize would
+   upscale it well past 1:1 on wide/retina screens, softening the fine
+   text inside each tile. .hero-flush renders the image at exactly 100%
+   of its frame (no oversize, no drift) so it's never upscaled beyond
+   what the frame itself requires. Pair with no data-parallax attribute
+   on the img, since there's no buffer left for it to shift within. */
+.project-detail-hero.hero-flush img{
+  top:0; left:0; width:100%; height:100%;
+}
+@media (min-width:640px){
+  /* Every page using this shared class needs to set --hero-ratio inline
+     (e.g. style="--hero-ratio:3000/900") to its own hero image's exact
+     native dimensions. This used to be aspect-ratio:auto, which worked
+     because the img was in normal flow and sized the frame implicitly —
+     but the img above is now position:absolute for the parallax buffer,
+     so it no longer contributes to the frame's height at all, and the
+     frame needs an explicit ratio or it collapses to 0 height. The var()
+     fallback (4/3) only exists as a defensive default for a page that
+     forgets to set it; it won't match that page's actual image. */
+  .project-detail-hero{ aspect-ratio: var(--hero-ratio, 4/3); }
+}
+.project-gallery{
+  display:grid; grid-template-columns:1fr; gap:16px; margin-top:48px;
+}
+.project-gallery img{
+  width:100%; aspect-ratio:16/9; object-fit:cover; display:block; background:var(--panel);
+}
+.project-gallery figcaption{
+  font-family:var(--sans); font-size:12px; color:var(--ink-soft); margin-top:8px;
+}
+@media (min-width:640px){
+  .project-gallery{ grid-template-columns:1fr 1fr; }
+}
+.project-detail-body{
+  padding:40px 0 72px; max-width:none;
+}
+.project-detail-body > p{ max-width:680px; }
+.project-detail-body h2.section-label:first-child{ margin-top:0; padding-top:0; }
+.project-detail-body h2.section-label:first-child::before{ display:none; }
+/* use directly after .split-section (or any element that already supplies its own bottom divider) to avoid a doubled-up line */
+.project-detail-body h2.section-label.no-divider{ margin-top:72px; padding-top:0; }
+.project-detail-body p{
+  font-family:var(--sans); font-size:16px; line-height:1.7; color:var(--ink-soft); margin-bottom:18px;
+}
+.project-meta-grid{
+  display:flex; flex-wrap:wrap; gap:32px; padding:24px 0 40px; border-top:1px solid var(--ink); margin-top:32px;
+  width:calc(var(--vw100, 100vw) + 2px); position:relative; left:50%; right:50%;
+  margin-left:calc(var(--vw100, 100vw) / -2); margin-right:calc(var(--vw100, 100vw) / -2); box-sizing:border-box;
+  padding-left:var(--gutter); padding-right:var(--gutter);
+}
+.project-meta-grid .cv-row{ padding:0; }
+.project-meta-grid .cv-row.disciplines{ flex-basis:100%; max-width:520px; }
+.disciplines-list{ display:flex; flex-wrap:wrap; gap:6px 0; font-family:var(--sans); font-weight:500; font-size:14px; color:var(--ink); margin-top:3px; }
+.disciplines-list span:not(:last-child)::after{ content:' • '; color:var(--ink-soft); }
+
+/* subtitle beneath a project h1 */
+.project-subtitle{
+  font-family:var(--sans); font-weight:400; font-size:20px; line-height:1.4;
+  color:var(--ink-soft); max-width:640px; margin-top:14px;
+}
+
+/* two-image hero row (e.g. cover + finished applications) */
+.project-hero-duo{
+  display:grid; grid-template-columns:1fr; gap:8px; margin-top:32px;
+}
+.project-hero-duo > div{ aspect-ratio:4/3; overflow:hidden; background:var(--panel); }
+.project-hero-duo img{ width:100%; height:100%; object-fit:cover; display:block; }
+@media (min-width:640px){
+  .project-hero-duo{ grid-template-columns:1fr 1.4fr; }
+}
+
+/* prose lists inside case study copy */
+.project-detail-body ul{
+  margin:0 0 24px; padding-left:20px; max-width:680px;
+}
+.project-detail-body ul li{
+  font-family:var(--sans); font-size:16px; line-height:1.7; color:var(--ink-soft); margin-bottom:8px;
+}
+.project-detail-body ul li::marker{ color:var(--ink-soft); }
+
+/* pull quote / guiding question */
+.pullquote{
+  font-family:var(--sans); font-weight:400; font-style:italic; font-size:22px; line-height:1.4;
+  color:var(--ink); max-width:600px; margin:28px 0; padding-left:20px; border-left:2px solid var(--ink);
+}
+
+/* elegant role card, used in place of a portrait */
+.role-card{
+  border:1px solid var(--ink); border-radius:4px; padding:28px; margin:8px 0 32px; max-width:420px;
+}
+.role-card .label{ font-family:var(--sans); font-size:12px; color:var(--ink-soft); letter-spacing:.04em; text-transform:uppercase; margin-bottom:10px; }
+.role-card .role-title{ font-family:var(--sans); font-weight:700; font-size:20px; color:var(--ink); }
+.role-card .role-sub{ font-family:var(--sans); font-size:14px; color:var(--ink-soft); margin-top:6px; line-height:1.5; }
+
+/* process timeline stepper */
+.process-timeline{
+  display:inline-flex; flex-wrap:wrap; align-items:center; gap:6px; margin:28px 0 40px; max-width:100%;
+  font-family:var(--mono2); font-size:12px; letter-spacing:.03em; text-transform:uppercase; color:var(--ink);
+}
+.process-timeline span.step{ padding:0; }
+.process-timeline span.arrow{ color:var(--ink-soft); }
+
+/* reusable design-process subsections */
+.process-block{
+  border-top:1px solid var(--ink); padding-top:32px; margin-top:48px;
+  width:calc(var(--vw100, 100vw) + 2px); position:relative; left:50%; right:50%;
+  margin-left:calc(var(--vw100, 100vw) / -2); margin-right:calc(var(--vw100, 100vw) / -2); box-sizing:border-box;
+  padding-left:var(--gutter); padding-right:var(--gutter);
+}
+.process-block h3{
+  font-family:var(--sans); font-weight:700; font-size:20px; color:var(--ink); margin-bottom:10px;
+}
+.process-block > p{ max-width:680px; }
+
+/* denser grid for exploration / process imagery with short captions */
+.project-gallery--tight{
+  grid-template-columns:repeat(2, 1fr); gap:12px; margin-top:24px;
+}
+.project-gallery--tight img{ aspect-ratio:4/3; }
+.project-gallery--tight figcaption{ font-size:11px; }
+@media (min-width:640px){
+  .project-gallery--tight{ grid-template-columns:repeat(4, 1fr); }
+}
+
+/* reusable two-column section with a divider above and between columns.
+   Like h2.section-label, the content itself stays in plain normal flow
+   (no width/left/margin full-bleed trick) so it always lines up exactly
+   with the rest of the body copy; only the two horizontal divider lines
+   are full-bleed, via ::before (top) and ::after (bottom) pseudo-
+   elements. The vertical divider between columns on desktop is a plain
+   border-left on the second column instead, since ::after is now
+   spoken for. */
+.split-section{
+  position:relative; display:block; margin-top:0; padding-top:72px; padding-bottom:72px;
+}
+.split-section::before, .split-section::after{
+  content:''; position:absolute; left:50%;
+  width:calc(var(--vw100, 100vw) + 2px); height:1px; background:var(--ink);
+  margin-left:calc(var(--vw100, 100vw) / -2);
+}
+.split-section::before{ top:0; }
+.split-section::after{ bottom:0; }
+.split-section h2.section-label{ margin-top:0; padding-top:0; }
+.split-section h2.section-label::before{ display:none; }
+.split-col{ padding-bottom:32px; }
+.split-col:last-child{
+  position:relative;
+  padding-top:72px; margin-top:72px;
+}
+.split-col:last-child::before{
+  content:''; position:absolute; top:0; left:50%; height:1px;
+  width:calc(var(--vw100, 100vw) + 2px); background:var(--ink);
+  margin-left:calc(var(--vw100, 100vw) / -2);
+}
+@media (min-width:640px){
+  .split-section{ display:grid; grid-template-columns:1fr 1fr; gap:0; align-items:stretch; }
+  .split-col{ padding-right:28px; padding-bottom:0; }
+  .split-col:last-child{
+    padding-top:0; margin-top:0; padding-left:28px;
+  }
+  .split-col:last-child::before{
+    top:-72px; bottom:-72px; left:0; height:auto;
+    width:1px; margin-left:0;
+  }
+}
+
+/* modifier: keep .split-section's own top/bottom dividers (below the
+   hero, above whatever follows) but drop the divider between its two
+   columns — used on every project's Brand/Overview/My Role block,
+   which wants the outer two lines but not the inner one. Scoped to
+   this modifier rather than changed on the base rule in case a future
+   .split-section elsewhere on the site actually wants the inner
+   column divider. */
+.split-section.no-col-divider .split-col:last-child::before{ display:none; }
+/* on mobile (stacked columns, no grid yet), .split-col:last-child's
+   72px/72px padding-top+margin-top exists to leave room for the
+   horizontal divider line above it — 72px above the line, 72px below,
+   so the line sits centered in a consistent 144px gap. no-col-divider
+   removes that line but the base rule still reserved the full 144px,
+   leaving Brand and Overview much further apart on mobile than Overview
+   and My Role (which use .split-col-stack's plain 40px gap). Scoped to
+   max-width so it doesn't touch the min-width:640px grid layout, which
+   already resets this column's padding-top/margin-top to 0 itself. */
+@media (max-width:639px){
+  .split-section.no-col-divider .split-col:last-child{ padding-top:0; margin-top:40px; }
+}
+
+/* modifier: instead of splitting into two equal 1fr columns, give the
+   logo column a narrow fixed width and cap the content column well
+   short of filling the rest of the row — used on every project's
+   Brand/Overview/My Role block, where a small square logo stretched
+   across half the row (and body copy stretched nearly as wide) looked
+   unbalanced. Fixed-width tracks (rather than 1fr) pack to the start of
+   the grid by default, so the remaining row width is simply left empty
+   on the right rather than being absorbed by either column. */
+@media (min-width:640px){
+  .split-section--brand{ grid-template-columns:400px minmax(0, 640px); }
+}
+
+/* wrapper for a second subsection stacked below another one in the same
+   .split-col (e.g. "Overview" then "My Role" sharing a column). Plain
+   margin/padding/border box model instead of an absolutely-positioned
+   pseudo-element — no containing-block ambiguity, no risk of stray
+   properties leaking in from the unrelated base h2.section-label::before
+   rule.
+
+   At the 640px+ breakpoint this is sized entirely off its own natural
+   box rather than assuming .split-section is perfectly centered in the
+   viewport (a vw100-based bleed relies on that, and it didn't hold up).
+   Starting from the wrapper's natural 100% width:
+     - margin-left:-28px shifts the box 28px left, landing its left edge
+       exactly on the vertical divider between the two columns (canceling
+       the column's own padding-left).
+     - width adds that same 28px back (to undo the leftward shift's
+       effect on the right edge) plus 28px + var(--gutter) more, which is
+       exactly the distance from the column's natural right edge out to
+       the true viewport edge (28px = the column's own padding-right,
+       var(--gutter) = .wrap's outer padding — nothing else sits between
+       the column and the page edge). So: calc(100% + 56px + var(--gutter)).
+     - padding-left:28px and padding-right restore the text's original
+       inset on both sides (28px was "given back" to the left via the
+       margin, and 28px + gutter to the right via the width), so "My
+       Role" reads at the exact same margins as the rest of the column
+       even though the line behind it bleeds all the way to both edges.
+   Margin-top and padding-top on the wrapper are equal so the gap above
+   and below the line matches. */
+.split-col-stack{ margin-top:40px; padding-top:40px; border-top:1px solid var(--ink); }
+.split-col-stack h2.section-label{ margin-top:0; padding-top:0; }
+/* modifier: same stacked-subsection spacing, no divider line — used on
+   every project's My Role, which only wants the outer section-level
+   dividers kept (see .split-section.no-col-divider above). Padding is
+   dropped since it existed only to balance space around the line that's
+   no longer there; margin-top alone still gives the gap above "My Role". */
+.split-col-stack.no-divider{ border-top:none; padding-top:0; }
+@media (min-width:640px){
+  .split-col-stack{
+    margin-left:-28px; width:calc(100% + 56px + var(--gutter));
+    padding-left:28px; padding-right:calc(28px + var(--gutter));
+  }
+}
+
+.process-theme{ margin-top:32px; }
+.process-theme h4{ font-family:var(--sans); font-weight:600; font-size:16px; color:var(--ink); margin-bottom:6px; }
+.process-theme p{ max-width:680px; }
+
+/* grid & layout explainer — the designer's own grid SVGs (not guidelines
+   screenshots), 4 up: the bare grid, that grid drawing itself in, the same
+   grid overlaid on a real finished piece (dimmed), then the piece alone.
+   Full-bleed with the standard gutter, same pattern as the other section
+   grids. Column 2 draws in on a loop once scrolled into view (script.js
+   toggles .in-view via IntersectionObserver); columns 1, 3 and 4 are
+   static. */
+.grid-density-wrap{
+  margin-top:32px; background:transparent;
+  width:calc(100% + (2 * var(--gutter))); margin-left:calc(-1 * var(--gutter)); margin-right:calc(-1 * var(--gutter));
+  box-sizing:border-box; padding-left:var(--gutter); padding-right:var(--gutter);
+}
+.grid-density-img{ display:block; width:100%; height:auto; }
+
+/* spot illustration — text on the left, illustration grid on the right,
+   from desktop up (same pattern as internal identity). Spot Illustration's
+   h2 keeps its own top divider line at mobile/tablet, where it still spans
+   the full section width; at desktop it's nested in a narrower text column
+   so that divider math would break, so the divider (and the section's top
+   spacing) moves to the shared row wrapper instead, and the h2's own
+   version is switched off.
+
+   Wrapping the h2 in .si-text makes it a DOM first-child of a new parent,
+   which unintentionally matches the site-wide
+   ".project-detail-body h2.section-label:first-child" reset (meant for
+   headings that open the whole page, not this one) — same specificity,
+   so it was winning on source order and stripping the divider/spacing at
+   every breakpoint. Restore the normal heading treatment here explicitly,
+   at matching specificity, before disabling it again (correctly) at
+   desktop below. */
+.spot-illustration-layout .si-text h2.section-label{ margin-top:120px; padding-top:72px; }
+.spot-illustration-layout .si-text h2.section-label::before{ display:block; }
+.si-visuals{ margin-top:32px; }
+@media (min-width:1024px){
+  .spot-illustration-layout{
+    position:relative;
+    display:grid; grid-template-columns:340px 1fr; gap:56px; align-items:start;
+    margin-top:120px; padding-top:72px;
+  }
+  .spot-illustration-layout::before{
+    content:''; position:absolute; top:0; left:50%;
+    width:calc(var(--vw100, 100vw) + 2px); height:1px; background:var(--ink);
+    margin-left:calc(var(--vw100, 100vw) / -2);
+  }
+  .spot-illustration-layout .si-text h2.section-label{ margin-top:0; padding-top:0; }
+  .spot-illustration-layout .si-text h2.section-label::before{ display:none; }
+  .si-visuals{ margin-top:0; }
+  .si-visuals .illustration-wrap{ margin-top:0; }
+}
+
+/* client-side password gate — see script.js initPasswordGates(). Left-
+   aligned like the rest of the site, contained to a readable column
+   rather than spanning full width. */
+.password-gate{ padding:80px 0 120px; max-width:480px; }
+.password-gate h1{
+  font-family:var(--sans); font-weight:400; font-size:32px; line-height:1.05;
+  letter-spacing:-.03em; color:var(--ink); margin-bottom:12px;
+}
+.password-gate p{
+  font-family:var(--sans); font-size:16px; line-height:1.6; color:var(--ink-soft); margin-bottom:24px;
+}
+.password-gate-form{ display:flex; gap:10px; flex-wrap:wrap; }
+.password-gate-form input{
+  font-family:var(--sans); font-size:15px; padding:12px 14px; border:1px solid var(--ink); border-radius:6px;
+  background:transparent; color:var(--ink); min-width:200px; flex:1; box-sizing:border-box;
+}
+.password-gate-form input::placeholder{ color:var(--ink-soft); }
+.password-gate-form button{
+  font-family:var(--sans); font-weight:600; font-size:14px; padding:12px 20px; border-radius:6px;
+  background:var(--ink); color:var(--bg); border:1px solid var(--ink); cursor:pointer;
+}
+.password-gate-form button:hover{ opacity:.85; }
+.password-gate-error{ color:#C0392B; font-size:14px; margin-top:12px; margin-bottom:0; }
+
+/* internal identity — text on the left, visuals (logo comparison +
+   lockups sheet) on the right, from desktop up. Text column is narrower
+   than the usual body-copy width to leave more room for the visuals.
+   Stacked (text above visuals) below that. */
+.ii-visuals{ margin-top:32px; }
+@media (min-width:1024px){
+  .internal-identity-layout{
+    display:grid; grid-template-columns:340px 1fr; gap:56px; align-items:start;
+    margin-top:72px;
+  }
+  .ii-text h2.section-label.no-divider{ margin-top:0; }
+  .ii-visuals{ margin-top:0; }
+  .ii-visuals .identity-cards{ margin-top:0; }
+}
+
+/* identity-cards — a 2-column grid: the Internal/External logo cards
+   occupy row 1 (one per column), and the lockups card spans both
+   columns in row 2 (grid-column:1/-1), so it lines up exactly with the
+   combined left/right edges of the two cards above it. .logo-compare is
+   set to display:contents so its two .logo-card children participate
+   directly as grid items instead of being nested in their own row. */
+.identity-cards{
+  display:grid; grid-template-columns:repeat(2, 1fr); gap:24px; max-width:640px; margin:32px auto 0;
+}
+.logo-compare{ display:contents; }
+
+/* FirstAm lockups reference sheet — sits in its own rounded, subtly
+   tinted card (same treatment as the two logo cards above it), rather
+   than full-bleed, since it reads better at a more modest, contained
+   size, and spans the full width of the grid above (see .identity-cards). */
+.lockups-card{
+  grid-column:1 / -1; background:var(--panel); border-radius:16px; padding:32px var(--gutter);
+  box-sizing:border-box;
+}
+.lockups-label{ text-align:center; margin-bottom:20px; }
+.lockups-wrap{ color:var(--ink); }
+.lockups-img{ display:block; width:100%; height:auto; }
+
+/* grid-density diagram — same treatment as the other grid diagrams:
+   transparent background, stroke-only (no light-blue or white fills),
+   stroke follows the page's ink color (dark in light mode, white in dark
+   mode), same 1.5 stroke-width as the animated grid below. */
+.gd-clip{ fill:none; }
+.gd-line{ fill:none; stroke:currentColor; stroke-width:1.5; }
+.gd-space{ fill:none; }
+.gd-card{ fill:none; }
+
+.grid-explainer{
+  display:grid; grid-template-columns:repeat(2, 1fr); gap:16px; margin-top:32px;
+  width:calc(100% + (2 * var(--gutter))); margin-left:calc(-1 * var(--gutter)); margin-right:calc(-1 * var(--gutter));
+  box-sizing:border-box; padding-left:var(--gutter); padding-right:var(--gutter);
+}
+@media (min-width:640px){ .grid-explainer{ grid-template-columns:repeat(4, 1fr); } }
+
+.ge-cell{ display:flex; flex-direction:column; gap:10px; }
+.ge-frame{ position:relative; width:100%; aspect-ratio:1/1; background:var(--panel); overflow:hidden; }
+.ge-frame--flat{ background:transparent; }
+.ge-frame svg{ width:100%; height:100%; display:block; }
+.ge-dim-img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; opacity:.28; }
+.ge-overlay-svg{ position:absolute; inset:0; }
+.ge-final-img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+/* column 1 (static grid) and column 2 (animated grid) sit on a transparent
+   background over the page itself, so their strokes follow the page's own
+   ink color — dark in light mode, white in dark mode — via currentColor. */
+.g1-line{ fill:none; stroke:currentColor; stroke-width:3.4; }
+
+/* column 3's overlay grid sits on top of a fixed navy photo, not the page
+   background, so it keeps the source SVG's own brand navy / light-blue
+   regardless of site theme — switching to white/dark here would fight the
+   photo instead of the page. */
+.g2b-line{ fill:none; stroke:#013a6f; stroke-width:3.4; }
+.g2b-space{ fill:#dceff9; stroke:#013a6f; stroke-width:4.5px; stroke-dasharray:8 8; }
+
+/* animated grid (column 2) — same theme-adaptive stroke as column 1,
+   starts undrawn/hidden. The 3 "space" rects each keep their own untouched
+   SVG transform (translate + rotate) on the <rect> itself; the
+   scale/opacity animation lives on the wrapping <g> instead, so the CSS
+   transform doesn't clobber the SVG attribute transform and throw the
+   shape out of position. */
+.g2a-border, .g2a-line-h, .g2a-line-v, .g2a-pad{ fill:none; stroke:currentColor; stroke-width:3.4; }
+.g2a-space rect{ fill:#dceff9; stroke:currentColor; stroke-width:4.5px; stroke-dasharray:8 8; }
+.g2a-space{ transform-origin:center; transform-box:fill-box; }
+.g2a-unit{ font-family:var(--mono2); font-size:26px; fill:currentColor; }
+
+/* each shape loops: hidden -> drawn -> held -> reset -> hidden, timed
+   against a shared 4s cycle so the stagger between shapes stays in sync
+   on every repeat (delay differences persist correctly across infinite
+   iterations as long as duration matches). */
+@keyframes g2a-draw-4310{ 0%, 100%{ stroke-dashoffset:4310; } 10%, 65%{ stroke-dashoffset:0; } 70%{ stroke-dashoffset:4310; } }
+@keyframes g2a-draw-836{ 0%, 100%{ stroke-dashoffset:836; } 10%, 65%{ stroke-dashoffset:0; } 70%{ stroke-dashoffset:836; } }
+@keyframes g2a-draw-840{ 0%, 100%{ stroke-dashoffset:840; } 10%, 65%{ stroke-dashoffset:0; } 70%{ stroke-dashoffset:840; } }
+@keyframes g2a-draw-3350{ 0%, 100%{ stroke-dashoffset:3350; } 10%, 65%{ stroke-dashoffset:0; } 70%{ stroke-dashoffset:3350; } }
+@keyframes g2a-pop-loop{ 0%, 100%{ opacity:0; transform:scale(.85); } 10%, 65%{ opacity:1; transform:scale(1); } 70%{ opacity:0; transform:scale(.85); } }
+@keyframes g2a-label-loop{ 0%, 100%{ opacity:0; } 10%, 65%{ opacity:1; } 70%{ opacity:0; } }
+
+.g2a-line-h{ stroke-dasharray:836; stroke-dashoffset:836; }
+.g2a-line-v{ stroke-dasharray:840; stroke-dashoffset:840; }
+.g2a-pad{ stroke-dasharray:3350; stroke-dashoffset:3350; }
+.g2a-space, .g2a-unit{ opacity:0; }
+.g2a-space{ transform:scale(.85); }
+
+/* quick, snappy draw-in — the outer border stays on screen the whole time
+   (not part of the loop), then the gutter/margin lines draw in, then
+   padding, then the spacing zones pop in with their unit labels */
+.grid-explainer.in-view .g2a-line-h{ animation:g2a-draw-836 4s ease infinite .2s; }
+.grid-explainer.in-view .g2a-line-v{ animation:g2a-draw-840 4s ease infinite .3s; }
+.grid-explainer.in-view .g2a-pad{ animation:g2a-draw-3350 4s ease infinite .5s; }
+.grid-explainer.in-view .g2a-unit-pad{ animation:g2a-label-loop 4s ease infinite .65s; }
+.grid-explainer.in-view .g2a-space-1{ animation:g2a-pop-loop 4s ease infinite .7s; }
+.grid-explainer.in-view .g2a-unit-1{ animation:g2a-label-loop 4s ease infinite .85s; }
+.grid-explainer.in-view .g2a-space-2{ animation:g2a-pop-loop 4s ease infinite .8s; }
+.grid-explainer.in-view .g2a-unit-2{ animation:g2a-label-loop 4s ease infinite .95s; }
+.grid-explainer.in-view .g2a-space-3{ animation:g2a-pop-loop 4s ease infinite .9s; }
+
+/* Gearbox product mark — inline SVG (not <img>) so it can sit alongside
+   the animated breakdown next to it without a second network request,
+   but entirely static: just the square and its six white facets from
+   the original lockup, no green "GEARBOX" wordmark, no motion. */
+.gb-mark{ width:190px; max-width:100%; height:auto; display:block; }
+.gb-mark-bg{ fill:#404041; }
+.gb-mark-facet{ fill:#fff; }
+
+/* row pairing the static mark with the animated breakdown next to it —
+   align-items:center vertically centers the short, wide breakdown
+   diagram against the square mark's full height. gb-no-panel strips
+   .identity-showcase's usual panel background/padding on both, since
+   this pairing reads better sitting directly on the page than boxed.
+   Written as .identity-showcase.gb-no-panel (rather than .gb-no-panel
+   alone) so it wins on specificity regardless of source order — .gb-*
+   rules live earlier in this file than the shared .identity-showcase
+   rule they need to override, and a same-specificity, earlier-in-file
+   rule loses to a later one no matter how it reads top to bottom.
+   Previously capped at 800px like the spot-illustration wrap, the
+   component library sheets, and the motion-explainer video below it —
+   now widened to fill the full .case-split-visual column instead (see
+   the .gb-visual-wide note further down), so there isn't a chunk of
+   unused page width sitting to the right of a narrower fixed-width box
+   on desktop/tablet. justify-content still centers the mark+breakdown
+   pair within that (now wider) box — left-packed with the old 32px gap,
+   the two small logos looked sparse and adrift; centered as one
+   deliberate unit instead, with a wider 64px gap between the two so they
+   still read as distinct pieces rather than crowding each other.
+   background/padding/border-radius match .illustration-wrap.gb-spot-wrap
+   below it (same var(--panel) fill, same 32px/gutter padding, same 16px
+   radius, box-sizing:border-box so the padding is included inside the
+   box's own width rather than adding to it) — the individual logos are
+   kept transparent via .identity-showcase.gb-no-panel below, so it's
+   this shared row that carries the one subtle background behind both. */
+.gb-identity-row{
+  display:flex; align-items:center; justify-content:center; gap:64px; flex-wrap:wrap;
+  box-sizing:border-box;
+  background:var(--panel); border-radius:16px; padding:32px var(--gutter);
+}
+/* margin-top:0 undoes the base .identity-showcase's own 24px top margin
+   (meant for a standalone showcase sitting under body copy) — left in
+   place, that stray top-only margin was pushing both logos down inside
+   the flex row, throwing off align-items:center and leaving visibly more
+   space above them than below within .gb-identity-row's padding. */
+.identity-showcase.gb-no-panel{ background:transparent; padding:0; margin-top:0; }
+
+/* Gearbox logo breakdown — inline SVG of the client's own construction
+   diagram (LogoBreakdown.svg). The source file lays its five build
+   stages out left to right, but each stage's outer <g> here carries a
+   translate() that recenters it on the same spot (all five share
+   nearly identical width and vertical center in the source, so a
+   simple per-stage translateX — no scaling needed — is enough to stack
+   them exactly on top of each other). The result reads as one mark
+   morphing through its own construction rather than a filmstrip:
+   stages crossfade/draw in and out in place, one beginning before the
+   last has fully finished, ending on stage 5 (the finished mark) held
+   for a long beat before the whole thing resets to stage 1 and loops.
+   The SVG's viewBox is cropped tightly to that shared, centered region
+   (-125 -5 250 333) instead of the source file's full 2107-wide canvas.
+
+   Stages 1–4 are stroke-only line work in the source file, so each is
+   revealed with a stroke-dasharray/dashoffset "draw-on" rather than a
+   plain fade — it reads as the stage being drawn, which is what makes
+   it feel hand-built rather than just appearing. stroke-dasharray and
+   stroke-dashoffset are inherited SVG properties, so setting them once
+   on each stage's outer <g> is enough to drive every child path/
+   polygon/line inside it in sync — no need to tag or measure each of
+   the several dozen individual shapes. 3400 is a generic dash length
+   comfortably longer than any single shape's actual perimeter in this
+   diagram (same oversized-dasharray trick as g2a-draw-3350 above), so
+   it draws correctly without needing that exact number.
+
+   Stage 5 is solid fill (the finished, faceted mark) rather than line
+   work, so it materializes with a fade + scale instead of a draw-on.
+   Its scale animation lives on an INNER <g> (.gb-bd-stage-5), separate
+   from the OUTER <g> carrying the positioning translate() — combining
+   a static translate with an animated scale on the very same transform
+   property would make the translate distance itself get scaled as the
+   animation runs (CSS composes transform functions in sequence), which
+   very slightly drifts the mark's position as it scales. Splitting them
+   across parent/child sidesteps that entirely. transform-box:fill-box
+   on the inner <g> makes it scale from its own center.
+
+   Classes here are original to this diagram (gb-bd-line / gb-bd-fill)
+   rather than reusing the source file's own st0/st1 names, since those
+   generic names could otherwise collide with a different inlined SVG's
+   own style block elsewhere on the page. */
+/* flex:0 0 auto (not flex-grow) — the breakdown showcase used to grow to
+   fill whatever space was left in the row, which is exactly what made it
+   drift away from the static mark once .gb-identity-row gained a
+   max-width:800px and justify-content:center: the growing showcase
+   swallowed all the leftover space itself, leaving nothing for
+   justify-content to center against, so the pair ended up spread across
+   the full width instead of sitting close together in the middle. Fixed
+   sizing lets the row's own 16px gap and centering actually take
+   effect. */
+.gb-breakdown-showcase{ flex:0 0 auto; min-width:0; }
+.gb-breakdown{ width:100%; max-width:54px; height:auto; display:block; }
+.gb-bd-line{
+  fill:none; stroke:#7a7a7a; stroke-linecap:round; stroke-linejoin:round; stroke-width:7px;
+}
+.gb-bd-fill{ fill:#7a7a7a; }
+.gb-bd-stage{ opacity:0; }
+.gb-bd-stage-1, .gb-bd-stage-2, .gb-bd-stage-3, .gb-bd-stage-4{
+  stroke-dasharray:3400; stroke-dashoffset:3400;
+}
+.gb-bd-stage-5{ transform-box:fill-box; transform-origin:center; transform:scale(.85); }
+/* no held/flat stretch anywhere in these curves — each stage rises
+   straight to its peak and immediately starts falling back down, so
+   there's never a moment where a shape just sits still. Stages are
+   spaced 1s apart against a shared 6s loop while each one's own rise-
+   and-fall spans about 2.2s, so the next stage is already well into
+   drawing in before the current one has finished fading — a continuous
+   handoff rather than a series of distinct reveals with gaps between
+   them. cubic-bezier(.4,0,.2,1) eases smoothly in and out of that peak
+   instead of moving at a constant rate, which is what keeps it reading
+   as fluid rather than mechanical. Stage 5 keeps a brief hold since
+   it's the finished mark the loop resolves to — the one deliberate
+   pause left — timed to fade out exactly as stage 1's next cycle starts
+   drawing, so even that handoff has no gap. */
+@keyframes gb-bd-relay-draw{
+  0%, 100%{ opacity:0; stroke-dashoffset:3400; }
+  18%{ opacity:1; stroke-dashoffset:0; }
+  36%{ opacity:0; stroke-dashoffset:3400; }
+}
+@keyframes gb-bd-relay-fill{
+  0%, 100%{ opacity:0; transform:scale(.85); }
+  14%, 28%{ opacity:1; transform:scale(1); }
+  33%{ opacity:0; transform:scale(.85); }
+}
+.gb-breakdown.in-view .gb-bd-stage-1{ animation:gb-bd-relay-draw 6s cubic-bezier(.4,0,.2,1) infinite 0s; }
+.gb-breakdown.in-view .gb-bd-stage-2{ animation:gb-bd-relay-draw 6s cubic-bezier(.4,0,.2,1) infinite 1s; }
+.gb-breakdown.in-view .gb-bd-stage-3{ animation:gb-bd-relay-draw 6s cubic-bezier(.4,0,.2,1) infinite 2s; }
+.gb-breakdown.in-view .gb-bd-stage-4{ animation:gb-bd-relay-draw 6s cubic-bezier(.4,0,.2,1) infinite 3s; }
+.gb-breakdown.in-view .gb-bd-stage-5{ animation:gb-bd-relay-fill 6s cubic-bezier(.4,0,.2,1) infinite 4s; }
+
+@media (prefers-reduced-motion: reduce){
+  .g2a-border, .g2a-line-h, .g2a-line-v, .g2a-pad, .g2a-space, .g2a-unit{
+    animation:none !important; stroke-dashoffset:0 !important; opacity:1 !important; transform:none !important;
+  }
+  .gb-bd-stage{
+    animation:none !important; opacity:1 !important; transform:none !important; stroke-dashoffset:0 !important;
+  }
+}
+
+/* masonry gallery for example designs — no cropping, native aspect ratios */
+.masonry-gallery{
+  column-count:2; column-gap:16px; margin-top:32px;
+}
+.masonry-gallery img{
+  width:100%; height:auto; display:block; margin-bottom:16px; break-inside:avoid; background:var(--panel); border-radius:6px;
+}
+@media (min-width:640px){ .masonry-gallery{ column-count:2; } }
+@media (min-width:1024px){ .masonry-gallery{ column-count:4; } }
+
+/* spot illustration examples — per brand guidelines these sit on a white
+   card regardless of page theme; in dark mode the card flips to black
+   instead (rather than staying white) so it doesn't glare against the
+   rest of the dark page, while still reading as a distinct, contained
+   swatch either way. */
+.illustration-wrap{
+  margin:32px auto 0; background:#CCCCCC; border-radius:16px; padding:32px var(--gutter);
+  box-sizing:border-box; max-width:calc(720px + (2 * var(--gutter)));
+}
+html.light .illustration-wrap{ background:rgba(255,255,255,.7); }
+.illustration-grid{
+  display:grid; grid-template-columns:repeat(2, 1fr); gap:16px; max-width:720px; margin:0 auto;
+}
+.illustration-grid img{ width:100%; height:auto; display:block; }
+@media (min-width:1024px){ .illustration-grid{ grid-template-columns:repeat(4, 1fr); } }
+
+/* Gearbox's spot-illustration sheet has 23 small icons rather than
+   FirstAm's 4 larger ones, so it gets its own scale and treatment,
+   layered on top of the base .illustration-wrap/.illustration-grid
+   rules above (higher specificity via the combined selector, so it
+   doesn't need to touch — or risk changing — how the FirstAm page's own
+   illustration grid renders).
+   Width matches .case-media--compact below it on this same page (both
+   now fill the full .case-split-visual column — see .gb-visual-wide
+   further down), so the two visuals read as similarly sized. Background
+   uses the site's standard subtle panel color instead of the base
+   rule's white/near-white card (that treatment matches this specific
+   client's brand guidelines on the FirstAm page, but isn't a rule this
+   page needs to follow) — overridden at the same html.light-scoped
+   specificity as the rule it's replacing, not just the base state. */
+/* the base .illustration-wrap centers itself with margin:auto (it's
+   meant to sit in the middle of the FirstAm page's spot-illustration
+   layout) — that's what was pushing this one to the right of the
+   static logo and video player above/below it, both of which are
+   plain left-aligned blocks. Zeroing the side margins here instead of
+   overriding the whole margin shorthand keeps the 32px top spacing the
+   base rule already sets.
+
+   Used to be capped at a plain 800px (matching .case-media--compact's
+   own 800px cap below it) rather than the base rule's
+   calc(800px + 2*gutter) pattern — that pattern exists on the base rule
+   so the INNER grid (720px) still gets its full intended width after
+   the wrap's own left/right padding eats into the box (box-sizing is
+   border-box, so padding is subtracted from whatever max-width says).
+   Both wrappers are now unbounded instead (see the .gb-visual-wide note
+   further down), so they fill the full .case-split-visual column rather
+   than leaving unused width to the right of a fixed 800px box on
+   desktop/tablet — they still line up with each other because both grow
+   to the same column width, not because they share a fixed number
+   anymore. max-width:none has to be set explicitly here, not just left
+   out — simply removing this modifier's own max-width doesn't clear the
+   cascade, it just lets the base .illustration-wrap rule's own
+   calc(720px + 2*gutter) cap take back over unopposed, which is why this
+   one didn't visibly widen along with the others. The icon grid below
+   scales up with the extra room since its columns are all fr-based. */
+.illustration-wrap.gb-spot-wrap{
+  max-width:none; background:var(--panel);
+  margin-left:0; margin-right:0;
+}
+html.light .illustration-wrap.gb-spot-wrap{ background:var(--panel); }
+.illustration-grid.gb-spot-grid{ grid-template-columns:repeat(4, 1fr); gap:8px; max-width:100%; margin-left:0; }
+@media (min-width:640px){ .illustration-grid.gb-spot-grid{ grid-template-columns:repeat(6, 1fr); } }
+@media (min-width:1024px){ .illustration-grid.gb-spot-grid{ grid-template-columns:repeat(8, 1fr); } }
+
+/* design motifs — Continuum Lines / Flight Paths. Each motif already
+   carries its own navy background and gradient artwork, so the frame is
+   just a rounded, clipped window onto it (no extra tint needed). */
+.motif-grid{
+  display:grid; grid-template-columns:1fr; gap:16px; margin-top:32px;
+}
+.motif-item .photo-group-label{ margin-bottom:12px; }
+.motif-frame{
+  border-radius:16px; overflow:hidden; aspect-ratio:16/9; background:#0F1B33;
+  position:relative;
+}
+/* zoomed just enough larger than its frame (both dimensions equally) to
+   cover the bigger of the two data-parallax values here (62, on Flight
+   Paths) at typical widths, plus a safety margin — 20% per side, sized
+   down from an earlier, more generous 44% zoom. This frame is short
+   relative to its width (16:9), so it needs more buffer than the
+   scatter photos (3:2) do for a similar shift amount, which is why this
+   isn't cropped as tight as those. Matching data-parallax-buffer="16"
+   on each img in HTML tells script.js to cap against this buffer. */
+.motif-frame img{
+  position:absolute; top:-20%; left:-20%;
+  width:140%; height:140%; object-fit:cover; display:block;
+}
+@media (min-width:640px){ .motif-grid{ grid-template-columns:repeat(2, 1fr); } }
+
+/* photography — grouped by direction (studio / environmental), a bit airier
+   than the dense example-designs masonry since photos want room to breathe */
+.photo-group{ margin-top:40px; }
+.photo-group:first-of-type{ margin-top:32px; }
+.photo-group-label{
+  font-family:var(--mono2); font-size:11px; font-weight:500; color:var(--ink-soft);
+  letter-spacing:.02em; text-transform:uppercase; margin-bottom:16px;
+}
+/* used standalone above the grid diagrams, outside a .photo-group wrapper,
+   so it needs its own top spacing to match the section rhythm */
+.diagram-label{ margin-top:86px; }
+/* 2 columns on mobile, 4 columns from tablet up — full-bleed with the same
+   gutter inset as the rest of the page. Photos are all the same 4:5 crop,
+   so aspect-ratio sizes each column from its own width — no fixed pixel
+   height, no scroll, no crop. */
+.photo-grid{
+  display:grid; grid-template-columns:repeat(2, 1fr); gap:16px;
+  width:calc(100% + (2 * var(--gutter))); margin-left:calc(-1 * var(--gutter)); margin-right:calc(-1 * var(--gutter));
+  box-sizing:border-box; padding-left:var(--gutter); padding-right:var(--gutter);
+}
+/* extra breathing room specifically where a .photo-grid follows body
+   copy directly (Legacy Audit, Product UI, and the equivalent sections
+   on other project pages) — .project-detail-body p's own 18px
+   margin-bottom read too tight before the images started. Scoped to
+   this adjacent-sibling pattern (not a change to p's margin-bottom
+   itself) so paragraph-to-paragraph and paragraph-to-heading spacing
+   elsewhere stay exactly as they were; margin-top here simply wins the
+   collapse against the paragraph's smaller margin-bottom rather than
+   adding to it. Global across every project page, since all of them use
+   this same "body copy, then a photo grid" pattern. */
+.project-detail-body p + .photo-grid{ margin-top:64px; }
+@media (min-width:640px){ .photo-grid{ grid-template-columns:repeat(4, 1fr); } }
+.photo-grid img{
+  width:100%; height:auto; aspect-ratio:4/5; object-fit:cover; display:block; background:var(--panel); border-radius:6px;
+}
+
+/* modifier for photo-grids with only 2 images (e.g. before/after style
+   pairs) — stay 2-up at every breakpoint instead of stretching to 4 thin
+   columns. */
+@media (min-width:640px){ .photo-grid.cols-2{ grid-template-columns:repeat(2, 1fr); } }
+
+/* modifier for grids of wide editorial photography (e.g. photo-journal
+   spreads) rather than the default 4:5 portrait crop — landscape aspect
+   closer to the source images, no border since these are photographs
+   rather than flat UI captures. Pair with .cols-2 so images stay large
+   enough to read. */
+.photo-grid--wide img{
+  aspect-ratio:3/2; border-radius:6px;
+  border:1px solid color-mix(in srgb, var(--ink) 15%, transparent);
+}
+
+/* modifier for a fixed 2-up grid that collapses to a single column on
+   mobile (rather than .cols-2, which stays 2-up even on phones). */
+.photo-grid.cols-2-desktop{ grid-template-columns:1fr; }
+@media (min-width:640px){ .photo-grid.cols-2-desktop{ grid-template-columns:repeat(2, 1fr); } }
+
+/* modifier for a single-column grid at every breakpoint (overrides the
+   base .photo-grid's 2-up/4-up behavior). */
+.photo-grid.cols-1{ grid-template-columns:1fr; }
+@media (min-width:640px){ .photo-grid.cols-1{ grid-template-columns:1fr; } }
+
+/* modifier for dense contact-sheet-style grids (e.g. a full set of
+   presentation slides or field photos) — 3 columns on mobile, 6 from
+   tablet up. Tighter gap than the base .photo-grid to match the smaller,
+   scannable scale of the thumbnails. Images keep their native aspect
+   ratio (no forced crop) since these are meant to read as an uncropped
+   contact sheet of the actual source files — height:auto instead of the
+   base .photo-grid's fixed aspect-ratio/object-fit:cover. */
+.photo-grid.cols-6{ grid-template-columns:repeat(3, 1fr); gap:10px; }
+@media (min-width:640px){ .photo-grid.cols-6{ grid-template-columns:repeat(6, 1fr); } }
+.photo-grid.cols-6 img{ aspect-ratio:auto; height:auto; object-fit:unset; align-self:center; }
+
+/* modifier for a moderate contact-sheet grid (e.g. a smaller photo set
+   that shouldn't shrink as far as .cols-6) — 2 columns on mobile, 3 from
+   tablet up. Same uncropped, native-ratio treatment as .cols-6. */
+.photo-grid.cols-3{ grid-template-columns:repeat(2, 1fr); gap:10px; }
+@media (min-width:640px){ .photo-grid.cols-3{ grid-template-columns:repeat(3, 1fr); } }
+.photo-grid.cols-3 img{ aspect-ratio:auto; height:auto; object-fit:unset; align-self:center; }
+
+/* modifier for a 4-column contact-sheet grid — 2 columns on mobile, 4
+   from tablet up. Same uncropped, native-ratio treatment as .cols-3/.cols-6. */
+.photo-grid.cols-4{ grid-template-columns:repeat(2, 1fr); gap:10px; }
+@media (min-width:640px){ .photo-grid.cols-4{ grid-template-columns:repeat(4, 1fr); } }
+.photo-grid.cols-4 img{ aspect-ratio:auto; height:auto; object-fit:unset; align-self:center; }
+
+/* modifier for a 2-column contact-sheet grid, uncropped/native-ratio like
+   .cols-3/.cols-4/.cols-6 above. Named distinctly from the existing
+   .cols-2 (which stays a fixed 2-up crop for other pages) so this doesn't
+   change that unrelated modifier's behavior. */
+.photo-grid.cols-2-native{ grid-template-columns:1fr; gap:10px; }
+@media (min-width:640px){ .photo-grid.cols-2-native{ grid-template-columns:repeat(2, 1fr); } }
+.photo-grid.cols-2-native img{ aspect-ratio:auto; height:auto; object-fit:unset; align-self:center; }
+
+/* [data-parallax] elements get their transform set continuously by
+   initParallax() in script.js on scroll. will-change hints the browser
+   to keep these on their own compositor layer, and the short transition
+   smooths out the per-frame jump between scroll-driven updates instead
+   of feeling like discrete steps. Reduced-motion users never get the
+   attribute's transform touched by JS, but the transition is also
+   killed globally by the prefers-reduced-motion rule further down as a
+   second line of defense. */
+[data-parallax]{ will-change:transform; transition:transform .2s ease-out; }
+
+/* scattered/collage layout — an experimental alternative to the regular
+   grids above for a set of photos, used on Field Documentation. Trying
+   this instead of forcing it into .photo-grid's family of modifiers since
+   it's structurally different (deliberately irregular sizes/position
+   instead of uniform columns) and is easy to revert by swapping the
+   class back to "cols-2-native" on the section's <div> if it doesn't
+   work out.
+
+   Mobile: a single column, but each image gets its own width (46–82%),
+   left/right/center alignment (via margin:auto combinations), and a
+   distinct bottom margin, so it still reads as scattered rather than a
+   plain stacked list even before the grid kicks in.
+
+   640px+: a 12-column grid with only grid-column set per image (no
+   grid-row) — auto-placement finds the next open slot itself, so
+   supplying varied column spans/starts produces an irregular mosaic
+   with real gaps (negative space) wherever a span doesn't fill its row,
+   without any risk of images overlapping. align-self varies per image
+   (start/center/end) so images sharing a row settle at different
+   heights within it, rather than all lining up along the same edge. */
+.scatter-grid{ display:flex; flex-direction:column; }
+/* each photo now sits inside a .scatter-frame mask: the frame is the
+   flex/grid item — all the width/margin/grid-column/overlap positioning
+   below applies to IT — and the img inside is zoomed just enough larger
+   than its frame (in both dimensions equally, not just height) to cover
+   the biggest data-parallax value used in this section (64, on img5)
+   at typical desktop frame sizes, plus a safety margin — 30% zoom,
+   15% per side, sized down from an earlier, much more generous 44% zoom
+   that cropped more of each photo than these particular shift amounts
+   actually need. Matching data-parallax-buffer="12" on each img in HTML
+   tells script.js to cap against this smaller buffer. Scaling both axes
+   equally keeps the crop symmetric and preserves the photo's own aspect
+   ratio. aspect-ratio:3/2 matches these photos' native ratio, so the
+   only crop is this deliberate parallax-buffer zoom, not a forced
+   aspect mismatch. */
+.scatter-frame{
+  display:block; overflow:hidden; border-radius:6px; background:var(--panel);
+  position:relative; aspect-ratio:3/2;
+}
+.scatter-frame img{
+  position:absolute; top:-15%; left:-15%;
+  width:130%; height:130%; object-fit:cover; display:block;
+}
+.scatter-frame:nth-child(1){ width:78%; margin:0 auto 56px 0; }
+.scatter-frame:nth-child(2){ width:58%; margin:0 0 88px auto; }
+.scatter-frame:nth-child(3){ width:70%; margin:0 auto 40px auto; }
+.scatter-frame:nth-child(4){ width:50%; margin:0 auto 100px 8%; }
+.scatter-frame:nth-child(5){ width:64%; margin:0 0 48px auto; }
+.scatter-frame:nth-child(6){ width:82%; margin:0 auto 72px auto; }
+.scatter-frame:nth-child(7){ width:46%; margin:0 auto 56px 20%; }
+.scatter-frame:nth-child(8){ width:72%; margin:0 auto 0 auto; }
+@media (min-width:640px){
+  /* round 4: full-bleed to the true viewport edges (same --vw100 trick
+     used elsewhere on the site — safe because html{overflow-x:hidden}
+     is set globally) instead of sitting inset inside the normal gutter.
+     That alone lets column 1 and column 12 touch the real left/right
+     edges of the screen, which is most of the fix for "the right side
+     feels empty" — several images below now land all the way at the
+     true right edge instead of stopping at the content column's old
+     boundary. */
+  .scatter-grid{
+    display:grid; grid-template-columns:repeat(12, 1fr);
+    column-gap:32px; row-gap:56px; align-items:start;
+    width:calc(var(--vw100, 100vw) + 2px); position:relative; left:50%;
+    margin-left:calc(var(--vw100, 100vw) / -2);
+  }
+  .scatter-frame{ width:100%; margin:0 !important; }
+  /* column plan re-simulated by hand row by row (checking each item
+     against every prior row, in DOM order) — this placement is
+     confirmed overlap-free at the grid-track level. img5 was the
+     smallest-spanning image (5 cols) so it was bumped to 6; that no
+     longer fits alongside the enlarged img4 (7 cols, 7+6>12), so it
+     auto-drops to its own row instead — the browser's auto-placement
+     handles this on its own since only grid-column is ever set, never
+     grid-row:
+       row1: frame1 (1–6) + frame2 (7–12), no gap — both true edges touched
+       row2: frame3 (3–9), gaps 1–2, 10–12
+       row3: frame4 (1–7) alone, gap 8–12
+       row4: frame5 (7–12), gap 1–6 — touches true right edge
+       row5: frame6 (2–9), gaps 1, 10–12
+       row6: frame7 (1–9), gap 10–12
+       row7: frame8 (4–11), gaps 1–3, 12
+     Deliberate exceptions layered on top of that clean grid, none using
+     shadows — overlaps read as intentional purely through z-index/paint
+     order: frame5 is also stretched past its own cell so it visibly
+     runs off the true right edge of the screen; frame3 is pulled up to
+     slightly overlap the bottom of row1 (shares columns with both
+     frame1 and frame2); frame6 is pulled up to slightly overlap the
+     bottom-right of frame5 (still valid after frame5's row shifted
+     down, since they're still in adjacent rows sharing columns 7–9);
+     frame8 is pulled up to slightly overlap the bottom of frame7
+     (shares columns 4–9). position:relative for these already comes
+     from the base .scatter-frame rule, needed there for the inner
+     parallax img's absolute positioning. */
+  .scatter-frame:nth-child(1){ grid-column:1 / span 6; align-self:start; }
+  .scatter-frame:nth-child(2){ grid-column:7 / span 6; align-self:start; }
+  .scatter-frame:nth-child(3){
+    grid-column:3 / span 7; align-self:start;
+    margin-top:-60px !important; z-index:1;
+  }
+  .scatter-frame:nth-child(4){ grid-column:1 / span 7; align-self:start; }
+  .scatter-frame:nth-child(5){
+    grid-column:7 / span 6; align-self:start; justify-self:start;
+    width:122% !important;
+  }
+  .scatter-frame:nth-child(6){
+    grid-column:2 / span 8; align-self:start;
+    margin-top:-70px !important; z-index:1;
+  }
+  .scatter-frame:nth-child(7){ grid-column:1 / span 9; align-self:start; z-index:1; }
+  .scatter-frame:nth-child(8){
+    grid-column:4 / span 8; align-self:start;
+    margin-top:-90px !important; z-index:2;
+  }
+}
+
+/* explicit two-column masonry for a set of mockups/spreads with varying
+   aspect ratios. Each .masonry-col is its own independent vertical flow
+   (not a CSS grid row), so a tall image in column 1 and a short image in
+   column 2 don't force each other's height — that's what lets the
+   tall/short/short/tall stagger read as masonry rather than a rigid
+   grid. Stacks into a single column on mobile. No border on the images
+   (unlike .case-media) since this reads as a loose set of artifacts,
+   not individually framed shots. */
+.masonry-grid{
+  display:flex; flex-direction:column; gap:16px; margin-top:24px;
+  width:calc(100% + (2 * var(--gutter))); margin-left:calc(-1 * var(--gutter)); margin-right:calc(-1 * var(--gutter));
+  box-sizing:border-box; padding-left:var(--gutter); padding-right:var(--gutter);
+}
+.masonry-col{ display:flex; flex-direction:column; gap:16px; }
+.masonry-grid img{
+  width:100%; height:auto; display:block; border-radius:6px; background:var(--panel);
+  border:1px solid color-mix(in srgb, var(--ink) 15%, transparent);
+}
+@media (min-width:640px){
+  .masonry-grid{ flex-direction:row; }
+  .masonry-col{ flex:1 1 0; min-width:0; }
+}
+
+/* Play page: one project (same-named-file group) at a time, each laid out
+   as its own scattered/collage section — adapted from .scatter-grid on
+   Field Documentation (project-03), but generalized to any group size
+   instead of a fixed 8 photos, and without that pattern's aspect-ratio
+   crop + parallax zoom (these are design flats/mockups of very mixed
+   aspect ratios, not a uniform set of field photos, so cropping them
+   to fit a frame would lose real content).
+   Mobile: single column, each image gets its own width (46–82%) and
+   left/right/center alignment via margin, so it reads as scattered
+   rather than a plain stacked list.
+   640px+: 12-column grid with only grid-column SPAN set per image (no
+   explicit start, no grid-row) — auto-placement finds the next open
+   slot itself, which guarantees no overlap regardless of how many
+   images a given project has (1 to 9 here), unlike the hand-verified
+   explicit-start version on project-03 which only works for an exact
+   count. align-self varies per image (start/center/end) so images
+   sharing a row settle at different heights instead of lining up.
+   Each project's section is full-bleed to the true viewport edges
+   (same --vw100 trick used elsewhere). */
+.play-scatter{ display:flex; flex-direction:column; margin-top:56px; }
+.play-scatter + .play-scatter{ margin-top:80px; }
+/* the last frame in each section has margin-bottom zeroed out (below),
+   and the grid layout at 640px+ has no trailing row-gap after its last
+   row either — so without this, the final project's images sit flush
+   against the footer's top border with no breathing room at all. */
+.play-scatter:last-of-type{ margin-bottom:64px; }
+.play-scatter-frame{
+  display:block; border-radius:6px; overflow:hidden; background:var(--panel);
+  border:1px solid color-mix(in srgb, var(--ink) 15%, transparent);
+  margin-bottom:32px;
+}
+.play-scatter-frame:last-child{ margin-bottom:0; }
+.play-scatter-frame img, .play-scatter-frame video{ width:100%; height:auto; display:block; }
+.play-scatter-frame:nth-child(1){ width:78%; margin-left:0; margin-right:auto; }
+.play-scatter-frame:nth-child(2){ width:58%; margin-left:auto; margin-right:0; }
+.play-scatter-frame:nth-child(3){ width:70%; margin-left:auto; margin-right:auto; }
+.play-scatter-frame:nth-child(4){ width:50%; margin-left:8%; margin-right:auto; }
+.play-scatter-frame:nth-child(5){ width:62%; margin-left:auto; margin-right:0; }
+.play-scatter-frame:nth-child(6){ width:74%; margin-left:auto; margin-right:auto; }
+.play-scatter-frame:nth-child(7){ width:46%; margin-left:20%; margin-right:auto; }
+.play-scatter-frame:nth-child(8){ width:66%; margin-left:auto; margin-right:auto; }
+.play-scatter-frame:nth-child(9){ width:56%; margin-left:12%; margin-right:auto; }
+/* one-off override for a frame that needs to render larger than its
+   nth-child position would otherwise give it — e.g. an image with body
+   copy on it that needs to stay legible rather than shrink to whatever
+   size its scattered position happens to land on. !important since a
+   plain class has lower specificity than the class+pseudo-class
+   nth-child rules above and would otherwise lose regardless of source
+   order. */
+.play-scatter-frame.play-scatter-frame--lg{ width:70% !important; margin-left:auto !important; margin-right:auto !important; }
+.play-scatter-frame.play-scatter-frame--full-tablet{ width:100% !important; margin-left:0 !important; margin-right:0 !important; }
+.play-scatter-frame.play-scatter-frame--w60{ width:90% !important; margin-left:auto !important; margin-right:auto !important; }
+.play-scatter-frame.play-scatter-frame--w35{ width:75% !important; margin-left:auto !important; margin-right:auto !important; }
+/* mobile stays at width:90% above; 640px+ (tablet+desktop) below sets it
+   to span 7 of 12 columns ≈58%, the closest whole-column approximation
+   to the requested 60% within this grid's integer-span system */
+@media (min-width:640px){
+  /* grid-auto-flow:dense (rather than the default "row" flow) lets a
+     later, smaller frame backfill into a gap left by an earlier row
+     instead of always starting a fresh row of its own — without it, a
+     span that doesn't fit the remaining width in the current row always
+     bumps to a brand new row, and if the next few spans keep not fitting
+     whatever's left, several frames in a row end up alone with empty
+     column-tracks beside them (reads as "stacked" rather than
+     scattered). Dense scans every row-so-far for the first opening a
+     frame fits in, so it fills that empty space instead. Still can't
+     overlap anything since it's still just placing into open tracks. */
+  .play-scatter{
+    display:grid; grid-template-columns:repeat(12, 1fr); grid-auto-flow:row dense;
+    column-gap:32px; row-gap:56px; align-items:start;
+    width:calc(var(--vw100, 100vw) + 2px); position:relative; left:50%;
+    margin-left:calc(var(--vw100, 100vw) / -2);
+  }
+  .play-scatter-frame{ width:100% !important; margin:0 !important; }
+  .play-scatter-frame:nth-child(1){ grid-column:span 6; align-self:start; }
+  .play-scatter-frame:nth-child(2){ grid-column:span 5; align-self:end; }
+  .play-scatter-frame:nth-child(3){ grid-column:span 7; align-self:center; }
+  .play-scatter-frame:nth-child(4){ grid-column:span 4; align-self:start; }
+  .play-scatter-frame:nth-child(5){ grid-column:span 6; align-self:end; }
+  .play-scatter-frame:nth-child(6){ grid-column:span 6; align-self:start; }
+  .play-scatter-frame:nth-child(7){ grid-column:span 5; align-self:center; }
+  .play-scatter-frame:nth-child(8){ grid-column:span 6; align-self:end; }
+  .play-scatter-frame:nth-child(9){ grid-column:span 4; align-self:start; }
+  .play-scatter-frame.play-scatter-frame--lg{ grid-column:span 5 !important; align-self:center !important; }
+  /* one-off override to pin a frame to the right half of the grid
+     instead of wherever dense auto-placement would otherwise land it
+     (typically the left, since auto-placement fills left-to-right).
+     Explicit start (rather than just a span) is what actually moves it;
+     dense placement still finds the first row where columns 7–12 are
+     free and slots it in there, so it can't overlap a sibling. */
+  .play-scatter-frame.play-scatter-frame--right{ grid-column:7 / span 6 !important; }
+  .play-scatter-frame.play-scatter-frame--w60{ grid-column:span 7 !important; align-self:start !important; }
+  .play-scatter-frame.play-scatter-frame--w35{ grid-column:span 4 !important; align-self:center !important; }
+}
+/* tablet only (640–1023px) — reverts to the frame's normal nth-child span
+   once desktop (1024px+) is reached */
+@media (min-width:640px) and (max-width:1023px){
+  .play-scatter-frame.play-scatter-frame--full-tablet{ grid-column:1 / -1 !important; align-self:start !important; }
+}
+
+/* a fixed sub-group of images meant to be read together as one set
+   (e.g. Founders 05–08 on the Play page) rather than scattered
+   independently — sits as a single item in .play-scatter's own flow
+   (so it still gets ordinary spacing from its siblings) but lays its
+   own children out in a plain, even grid: 2-up on mobile so the set
+   still reads together, 4-up (one row) from tablet up. Not built on
+   .play-scatter-frame/nth-child at all, since nth-child position here
+   describes the item's place in .play-scatter-set (1st of 4, 2nd of 4…),
+   not its place in the outer scattered section — reusing those rules
+   would apply arbitrary scatter widths inside what should be a uniform
+   grid. */
+.play-scatter-set{
+  display:grid; grid-template-columns:repeat(2, 1fr); gap:16px; margin-bottom:32px;
+}
+.play-scatter-set:last-child{ margin-bottom:0; }
+.play-scatter-set-item{
+  display:block; border-radius:6px; overflow:hidden; background:var(--panel);
+  border:1px solid color-mix(in srgb, var(--ink) 15%, transparent);
+}
+.play-scatter-set-item img{ width:100%; height:auto; display:block; }
+@media (min-width:640px){
+  .play-scatter-set{
+    grid-column:1 / -1; grid-template-columns:repeat(4, 1fr); margin:0 !important;
+  }
+}
+
+/* dense grid of every report page — 4 columns on mobile, 7 from tablet
+   up. Tighter gap than .photo-grid since the point is a scannable
+   contact-sheet of the whole document, not individually framed shots. */
+.report-pages-grid{
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:20px;
+  width:calc(100% + (2 * var(--gutter))); margin-left:calc(-1 * var(--gutter)); margin-right:calc(-1 * var(--gutter));
+  box-sizing:border-box; padding-left:var(--gutter); padding-right:var(--gutter);
+}
+@media (min-width:640px){ .report-pages-grid{ grid-template-columns:repeat(7, 1fr); gap:10px; } }
+.report-pages-grid img{
+  width:100%; height:auto; aspect-ratio:3840/2485; object-fit:cover; display:block; border-radius:4px; background:var(--panel);
+  border:1px solid color-mix(in srgb, var(--ink) 15%, transparent);
+}
+
+/* silent looping motion clips — 1 column on mobile, 3 from tablet up. */
+.motion-grid{
+  display:grid; grid-template-columns:1fr; gap:16px; margin-top:20px;
+  width:calc(100% + (2 * var(--gutter))); margin-left:calc(-1 * var(--gutter)); margin-right:calc(-1 * var(--gutter));
+  box-sizing:border-box; padding-left:var(--gutter); padding-right:var(--gutter);
+}
+@media (min-width:640px){ .motion-grid{ grid-template-columns:repeat(3, 1fr); } }
+.motion-grid video{
+  width:100%; height:auto; aspect-ratio:16/9; object-fit:cover; display:block; border-radius:6px; background:var(--panel);
+}
+
+/* small credits list — auto-width first column means the role labels
+   can differ in length ("Art Direction" vs "Photographer") while the
+   names in column 2 still line up flush across every row. */
+.contributors{
+  margin:32px 0 0; display:grid; grid-template-columns:auto 1fr; column-gap:24px; row-gap:10px;
+  align-items:center; max-width:480px;
+}
+.contributors dt{
+  font-family:var(--sans); font-weight:700; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft);
+}
+.contributors dd{
+  font-family:var(--sans); font-weight:400; font-size:14px; color:var(--ink); margin:0;
+}
+
+/* three-across grid for a restrained set of small square illustrations
+   (e.g. market/city motifs) — single column on narrow phones so each
+   illustration stays legible. */
+.illustration-trio{
+  display:grid; grid-template-columns:1fr; gap:16px; margin-top:24px;
+}
+@media (min-width:480px){ .illustration-trio{ grid-template-columns:repeat(3, 1fr); } }
+.illustration-trio img{
+  width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:var(--panel); border-radius:6px;
+}
+
+/* modifier for grids of product/UI screenshots rather than photography —
+   landscape crop instead of portrait, plus a hairline border since these
+   are flat interface captures that need a defined edge against the page
+   background. Screenshots are almost entirely white/near-white canvas,
+   which was blending straight into the page's own light (cream) or dark
+   background with no visible edge. A first pass used a 16px padded grey
+   mat, which read as a thick border rather than a subtle edge; a second
+   pass at solid var(--ink) was too dark; a third at solid var(--ink-soft)
+   was still too dark — var(--ink-soft) is a body-copy color, meant to be
+   readable text, not a faint line. color-mix() at low opacity (same
+   technique the site already uses for --hover-wash) blends ink down to
+   an actually-faint tint of the background instead, and stays
+   theme-correct automatically since it's mixing from var(--ink). */
+.photo-grid--ui img{
+  aspect-ratio:4/3; border:1px solid color-mix(in srgb, var(--ink) 15%, transparent); border-radius:4px;
+}
+
+/* modifier for grids that show each image at its own native proportions
+   instead of a uniform cropped ratio — currently just Product UI, whose
+   screenshots vary in aspect ratio and shouldn't be cropped to fit a
+   fixed box. Used to also drop the hairline border entirely ("flush"),
+   back when Component Library shared this class too, but Component
+   Library has since moved to its own .case-media-stack treatment, and
+   Product UI still wants the 1px border from the base rule above (kept,
+   not overridden here) for contrast against the page background. */
+.photo-grid--ui.photo-grid--flush img{
+  aspect-ratio:auto; object-fit:contain;
+}
+
+/* Product UI (currently the only grid using this combination of
+   modifiers) reads better at 3-up than the base .photo-grid's 4 — the UI
+   screenshots are denser than the 4:5 photo crops the default column
+   count was tuned for, so 4 columns left them too small to read. Scoped
+   to the same .photo-grid--ui.photo-grid--flush pairing rather than a
+   new page-specific class, since nothing else uses it. */
+@media (min-width:640px){
+  .photo-grid--ui.photo-grid--flush{ grid-template-columns:repeat(3, 1fr); }
+}
+
+/* Product UI's grid is split into two adjacent <div>s rather than one —
+   a 2-up "featured" first row (the dashboard and the roles/permissions
+   screen), then the rest at the section's normal 3-up — since CSS Grid
+   has no clean way to give just one row of a single grid a different
+   column count. gb-ui-row-3 doesn't need its own rule (it's still a
+   plain .photo-grid--ui.photo-grid--flush, so it already gets 2 columns
+   on mobile and 3 from the rule above at 640px+, both unchanged); it
+   exists only as a hook, paired with gb-ui-row-2, in case that changes
+   later. The 16px margin-top on the second row matches .photo-grid's own
+   row gap, so the two grids read as one continuous grid with a wider
+   first row rather than two separate blocks — applied unconditionally
+   (not just at 640px+) so the gap holds at every width, including
+   mobile. */
+.gb-ui-row-3{ margin-top:16px; }
+/* the featured row drops to a single column on mobile — two screenshots
+   side by side at phone widths were each too narrow to read — while the
+   rest of the grid (gb-ui-row-3) stays at its usual 2-up there. 3 classes
+   (0,3,0) needed to beat .photo-grid's own base grid-template-columns
+   (0,1,0) is lower, but combining for consistency with the 640px+ rule
+   below, which needs it for a different reason: see that rule's own
+   comment. */
+.photo-grid--ui.photo-grid--flush.gb-ui-row-2{ grid-template-columns:1fr; }
+@media (min-width:640px){
+  /* .photo-grid--ui.photo-grid--flush (two classes, specificity 0,2,0)
+     sets 3 columns above — .gb-ui-row-2 alone (0,1,0) loses to it
+     regardless of source order, leaving the "2-up" row rendered as a
+     3-column grid with an empty third track and both images stuck at
+     1/3 width instead of 1/2. Combining all three classes in one
+     selector (0,3,0) is what actually wins. */
+  .photo-grid--ui.photo-grid--flush.gb-ui-row-2{ grid-template-columns:repeat(2, 1fr); }
+}
+
+/* short bold lead-in line under a section heading, above the body copy —
+   used for case-study subsections that need a one-line summary before
+   the paragraph (e.g. "A mark built from modular logic"). */
+/* single framed image or video, contained within the body copy column
+   (not full-bleed) — used for one-off case-study visuals like a finished
+   sheet or an embedded video, rather than a multi-image grid. */
+.case-media{
+  margin-top:24px; border:1px solid var(--ink); border-radius:6px; overflow:hidden; background:var(--panel);
+}
+.case-media img, .case-media video{ width:100%; height:auto; display:block; }
+
+/* Stat block (e.g. CTV Spot's Metrics section): three columns at every
+   breakpoint, not just desktop — a 3-stat summary reads fine tight on
+   mobile, and splitting to fewer columns there would just stack them
+   without adding any real legibility. Numbers are large/Roboto Mono
+   (matching the site's other numeric/data typography — .project-number,
+   .clock-time, .g2a-unit — rather than the body's Inter), copy stays
+   Inter to match every other label on the site. clamp() keeps the number
+   from overflowing its column on narrow phones instead of needing a
+   separate mobile font-size rule. */
+.stat-grid{
+  display:grid; grid-template-columns:1fr; gap:32px;
+  margin-top:64px; text-align:center;
+}
+@media (min-width:640px){
+  .stat-grid{ grid-template-columns:repeat(3, 1fr); gap:16px; }
+}
+.stat-number{
+  font-family:var(--mono2); font-weight:300; font-size:clamp(40px, 13vw, 68px);
+  line-height:1; letter-spacing:-.01em; color:var(--ink);
+}
+@media (min-width:640px){
+  /* back down to the tighter clamp once stats are 3-across again — the
+     mobile-stacked size above would overflow a third-width column */
+  .stat-number{ font-size:clamp(24px, 6vw, 56px); }
+}
+.stat-label{
+  font-family:var(--sans); font-size:13px; font-weight:400; color:var(--ink-soft);
+  letter-spacing:.01em; margin-top:8px;
+}
+/* same type treatment as h2.section-label (e.g. "TV Spot" above it) —
+   font-family/size/weight/letter-spacing/uppercase all match — just
+   centered instead of left-aligned and colored --ink-soft instead of
+   full-strength --ink so it reads as secondary. max-width/margin reset
+   to override the inherited .project-detail-body > p{ max-width:680px }
+   rule, which was capping this to a narrow left-aligned box instead of
+   centering across the full content width. */
+/* qualified as ".project-detail-body p.stat-note" (class+class+tag)
+   rather than just ".stat-note" — .project-detail-body p and
+   .project-detail-body > p (font-size:16px, max-width:680px) are each
+   class+tag selectors too, same specificity as a bare .stat-note class
+   would have, so those base paragraph rules were winning on source order
+   and silently overriding this rule's font-size/max-width. Bumping this
+   selector's specificity above theirs is what actually fixes it, not
+   just reordering the CSS. */
+.project-detail-body p.stat-note{
+  font-family:var(--sans); font-size:10px; font-weight:700; color:var(--muted);
+  text-transform:uppercase; letter-spacing:.08em;
+  text-align:center; max-width:none; margin:24px 0 0;
+}
+
+/* modifier for a single small reference image or video (e.g. an
+   icon/illustration sheet, or an embedded explainer clip) that shouldn't
+   be stretched to the full column width — that's what was making the
+   illustration sheet look soft/pixelated — or framed with a border. */
+.case-media--compact{ border:none; background:transparent; max-width:800px; }
+
+/* .case-media--compact's 800px cap is the right default for a small
+   reference clip sitting inline with body copy elsewhere on the site,
+   but on this page it was leaving a chunk of unused width to the right
+   of the motion-explainer video on desktop/tablet, since its
+   .case-split-visual column is often considerably wider than 800px.
+   .gb-visual-wide (below, applied alongside .case-media--compact in the
+   markup) removes just the cap for this page without touching the base
+   modifier's default elsewhere. */
+.case-media--compact.gb-visual-wide{ max-width:none; }
+
+/* two (or more) .case-media sheets stacked in a single .case-split-visual
+   column instead of a photo grid — used for Component Library, where a
+   full library sheet and a single annotated detail read better large and
+   in sequence than tiled small. Fills the full .case-split-visual column
+   (like the spot-illustration wrap and motion-explainer video above) —
+   used to be capped at 800px like them, which left the same unused strip
+   of width to the right on desktop/tablet. Each image keeps its own
+   native aspect ratio (they're unrelated crops), so the two frames end
+   up different heights — only the width is matched. */
+.case-media-stack{ display:flex; flex-direction:column; gap:24px; }
+/* matches the faint color-mix() hairline on .photo-grid--ui img for
+   Legacy Audit and Product UI (see that rule's comment for why it's not
+   a solid color) — all three screenshot-heavy sections share the same
+   subtle 1px edge. */
+.case-media-stack .case-media{
+  margin-top:0; border:1px solid color-mix(in srgb, var(--ink) 15%, transparent); background:transparent;
+}
+
+/* generic text-left / visual-right case-study subsection (same pattern as
+   internal identity / spot illustration on the FirstAm page): text column
+   on the left, visual on the right, from desktop up; stacked below that.
+   Reused for Product Identity, Illustration, and Motion Explainer here.
+
+   Wrapping the h2 in .case-split-text makes it a DOM first-child of a new
+   parent, which unintentionally matches the site-wide
+   ".project-detail-body h2.section-label:first-child" reset (meant for a
+   heading that opens the whole page). Restore the normal heading
+   treatment at matching specificity before disabling it again (correctly)
+   at desktop, same fix as spot-illustration-layout above. */
+.case-split .case-split-text h2.section-label{ margin-top:120px; padding-top:72px; }
+.case-split .case-split-text h2.section-label::before{ display:block; }
+.case-split-visual{ margin-top:32px; }
+@media (min-width:1024px){
+  .case-split{
+    position:relative;
+    display:grid; grid-template-columns:340px 1fr; gap:56px; align-items:start;
+    margin-top:120px; padding-top:72px;
+  }
+  .case-split::before{
+    content:''; position:absolute; top:0; left:50%;
+    width:calc(var(--vw100, 100vw) + 2px); height:1px; background:var(--ink);
+    margin-left:calc(var(--vw100, 100vw) / -2);
+  }
+  .case-split .case-split-text h2.section-label{ margin-top:0; padding-top:0; }
+  .case-split .case-split-text h2.section-label::before{ display:none; }
+  .case-split-visual{ margin-top:0; }
+  .case-split-visual > *{ margin-top:0; }
+}
+
+/* logo/mark showcase — centered on a panel background, similar treatment
+   to the identity logo cards but for a single mark rather than a
+   comparison pair. inline-flex so the panel hugs the logo's width
+   instead of stretching to the full body-copy column. */
+.identity-showcase{
+  margin-top:12px; border-radius:8px; padding:0;
+  display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; max-width:100%;
+}
+.identity-showcase img{ width:280px; max-width:100%; height:auto; display:block; }
+
+/* modifier for a showcase panel that should fill the width of its
+   column (rather than hugging the logo) — logo stays centered and
+   modest in size. Padding above used to frame the (now-removed)
+   background; with no background to frame, it's just whitespace, so
+   spacing is controlled by margin alone. */
+.identity-showcase.identity-showcase--full{
+  display:flex; width:100%; margin-bottom:24px;
+}
+.identity-showcase--full img{ width:260px; }
+
+/* Sunbelt Rentals has no single-color SVG to filter/invert the way the
+   First American logo is handled below — it's shipped as two separate
+   rasters (a dark-on-light mark for light mode, a light-on-dark mark
+   for dark mode), so instead both are stacked in the same spot via
+   position:absolute and crossfaded with opacity on theme toggle. The
+   wrapper carries the box the logo used to define itself (width,
+   aspect-ratio from the source files' 887:307) since absolutely
+   positioned children don't contribute to it themselves. Specificity is
+   deliberately high (.identity-showcase--full .logo-swap img) so this
+   overrides the plain width:260px rule just above without touching it,
+   since that rule is still used by every other project's single-image
+   Brand logo. */
+.identity-showcase--full .logo-swap{
+  position:relative; width:260px; max-width:100%; aspect-ratio:887/307;
+}
+.identity-showcase--full .logo-swap img{
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  object-fit:contain; display:block; transition:opacity .4s ease;
+}
+.identity-showcase--full .logo-swap .logo-swap-dark{ opacity:0; }
+html:not(.light) .identity-showcase--full .logo-swap .logo-swap-light{ opacity:0; }
+html:not(.light) .identity-showcase--full .logo-swap .logo-swap-dark{ opacity:1; }
+
+/* First American logo is a solid-navy line-art SVG loaded via <img>, so
+   its fill can't be swapped with currentColor like the inlined logo
+   comparison SVGs below. In dark mode, force it to pure white with a
+   filter instead: brightness(0) turns every opaque pixel black
+   regardless of its original color, then invert(1) flips black to
+   white (transparent areas stay transparent). A plain invert(1) alone
+   would just shift the navy to an off-white/tan rather than true white. */
+html:not(.light) .identity-showcase--full img[src*="firstamerican-logo"]{
+  filter: brightness(0) invert(1);
+}
+
+/* Internal Identity logo comparison — both logos are inlined directly
+   (rather than CSS-masked) since mask-image's luminance-vs-alpha default
+   differs across browsers and was rendering a dark navy fill as nearly
+   invisible in some of them. Inlined, their fill is set to currentColor
+   so they still flip dark/white with the theme like the grid diagrams.
+
+   Each logo sits in its own rounded, subtly tinted card. .logo-compare
+   is display:contents (set in .identity-cards above) so the two cards
+   below are direct items of the identity-cards grid, which stretches
+   them to match each other's height automatically (grid's default
+   align-items:stretch). The label is a normal top-anchored child (not
+   centered), so both labels land on the same line since both cards
+   start at the same top edge; the logo below it lives in
+   .logo-card-fill, a flex:1 area that fills the rest of the (equal-
+   height) card and centers the logo within it — since that remaining
+   area is the same height in both cards, the two logos end up centered
+   against each other too, not just the labels. */
+.logo-card{
+  background:var(--panel); border-radius:16px; padding:32px 40px;
+  display:flex; flex-direction:column; align-items:center; gap:14px;
+}
+.logo-card-fill{ flex:1; display:flex; align-items:center; justify-content:center; min-width:0; }
+.logo-compare-mark{ height:44px; max-width:100%; color:var(--ink); }
+.logo-compare-mark svg{ display:block; height:100%; width:auto; max-width:100%; }
+.logo-compare-mark--external{ height:150px; }
+@media (min-width:640px){
+  .logo-compare-mark{ height:60px; }
+  .logo-compare-mark--external{ height:210px; }
+}
+
+/* placeholder note for content not yet supplied */
+.placeholder-note{
+  border:1px dashed var(--ink-soft); border-radius:4px; padding:16px 20px; margin:16px 0 28px;
+  font-family:var(--sans); font-size:13px; color:var(--ink-soft); max-width:680px; line-height:1.6;
+}
+
+@media (min-width:640px){
+  .hero h1{ font-size:40px; }
+  .hero h1.hero-paragraph{ font-size:56px; }
+  .hero-tagline{ font-size:18px; }
+  .about-intro p{ font-size:56px; }
+  .project-detail-head h1{ font-size:40px; }
+  .project-subtitle{ font-size:22px; }
+  .pullquote{ font-size:26px; }
+}
+@media (min-width:1024px){
+  .hero h1.hero-paragraph{ font-size:60px; }
+  .about-intro p{ font-size:60px; }
+  .work-head{ padding:20px var(--gutter); }
+  .project-detail-head h1{ font-size:52px; }
+  .hero .location-line{ padding-bottom:220px; }
+}
+@media (min-width:1440px){
+  .hero h1.hero-paragraph{ font-size:76px; }
+  .about-intro p{ font-size:76px; }
+  .work-head{ padding:24px var(--gutter); }
+  .hero .location-line{ padding-bottom:300px; }
+}

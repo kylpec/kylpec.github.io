@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<script>
+  /* Restores the user's last-chosen theme before first paint, so
+     navigating between pages doesn't flash light and then flip to dark.
+     Runs as an inline, render-blocking script in <head> (not from
+     script.js, which loads at the end of body — too late to prevent the
+     flash) and only needs to handle the dark case, since every page's
+     <html> already ships with class="light" as its default. */
+  (function(){
+    try{
+      if(localStorage.getItem('theme') === 'dark'){
+        document.documentElement.classList.remove('light');
+      }
+    }catch(e){}
+  })();
+</script>
+<title>Play — Kyle Peck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Geist+Pixel:ELSH@1&family=Roboto+Mono:wght@400;500;600&family=Xanh+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="site-nav">
+    <button class="theme-toggle mode-toggle" aria-label="Switch to dark mode" onclick="toggleTheme(this)">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4.3"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(45 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(90 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(135 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(180 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(225 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(270 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(315 12 12)"/></svg>
+      </button>
+      <span class="icon-btn-label icon-btn-label--mode" aria-hidden="true">MODE</span>
+      <button class="theme-toggle scroll-top" aria-label="Scroll to top">
+        <svg class="icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+      </button>
+      <span class="icon-btn-label icon-btn-label--top" aria-hidden="true">TOP</span>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html">Work</a>
+        <a href="play.html" aria-current="page">Play</a>
+        <a href="about.html">About</a>
+      </nav>
+      <span class="nav-current-dot" aria-hidden="true"></span>
+  </header>
+  <a class="brand-mark" href="index.html">K<span class="kern-left">Y</span>LE PECK</a>
+
+  <main>
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-nsc-jersey-mockup.jpg" alt="Nashville Soccer Club jersey mockup"></div>
+      <div class="play-scatter-frame"><img src="images/play-nsc-crest-wolves.jpg" alt="Nashville Soccer Club crest concept featuring a wolf motif"></div>
+      <div class="play-scatter-frame"><img src="images/play-nsc-crest-16.jpg" alt="Nashville Soccer Club crest concept exploration, variant 16"></div>
+      <div class="play-scatter-frame"><img src="images/play-nsc-crest-01.jpg" alt="Nashville Soccer Club crest concept exploration, variant 1"></div>
+      <div class="play-scatter-frame play-scatter-frame--w35">
+        <video autoplay loop muted playsinline poster="images/play-nsc-newlogo-poster.jpg">
+          <source src="images/play-nsc-newlogo.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="play-scatter-frame"><img src="images/play-nsc-crest-shield.jpg" alt="Simplified arched shield crest concept for Nashville Soccer Club"></div>
+      <div class="play-scatter-frame"><img src="images/play-nsc-crest-15.jpg" alt="Nashville Soccer Club crest concept exploration, variant 15"></div>
+      <div class="play-scatter-frame"><img src="images/play-nsc-crest-04.jpg" alt="Nashville Soccer Club crest concept exploration, variant 4"></div>
+      <div class="play-scatter-frame"><img src="images/play-nsc-crest-17.jpg" alt="Nashville Soccer Club crest concept exploration, variant 17"></div>
+      <div class="play-scatter-frame play-scatter-frame--w60"><img src="images/play-nsc-crest-19.jpg" alt="Nashville Soccer Club crest concept exploration, variant 19"></div>
+    </div>
+
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-richland-market-lockup.png" alt="'Richland Park Farmer's Market' logo lockup with a pepper illustration, established 2010"></div>
+      <div class="play-scatter-frame"><img src="images/play-richland-detail.png" alt="Close-up detail of the Richland Park Farmer's Market badge design"></div>
+      <div class="play-scatter-frame"><img src="images/play-richland-market-badge.png" alt="Vintage-style badge illustration reading 'Richland Park Farmer's Market'"></div>
+      <div class="play-scatter-frame"><img src="images/play-richland-wordmark.png" alt="'Richland Park' wordmark with a daisy illustration"></div>
+    </div>
+
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-affd-box-mockup.jpg" alt="Sliding drawer box packaging mockup for Avent Ferry Family Dentistry"></div>
+      <div class="play-scatter-frame"><img src="images/play-affd-bizcard-mockup.jpg" alt="Business card mockup for Avent Ferry Family Dentistry"></div>
+      <div class="play-scatter-frame"><img src="images/play-affd-social-02.jpg" alt="Second social media graphic for Avent Ferry Family Dentistry"></div>
+      <div class="play-scatter-frame"><img src="images/play-affd-logo-acronym.jpg" alt="AFFD monogram acronym mark for Avent Ferry Family Dentistry"></div>
+      <div class="play-scatter-frame"><img src="images/play-affd-social-01.jpg" alt="Social media graphic for Avent Ferry Family Dentistry"></div>
+      <div class="play-scatter-frame"><img src="images/play-affd-stickers.jpg" alt="Sticker sheet for Avent Ferry Family Dentistry"></div>
+      <div class="play-scatter-frame"><img src="images/play-affd-logo-full.jpg" alt="Full lockup logo for Avent Ferry Family Dentistry"></div>
+    </div>
+
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-justinjosh-invite-mockup.jpg" alt="Wedding invitation mockup for Joshua Monk and Justin Burgess's Winston-Salem, NC wedding"></div>
+      <div class="play-scatter-frame"><img src="images/play-justinjosh-type.jpg" alt="Custom type treatment for Joshua Monk and Justin Burgess's wedding branding"></div>
+      <div class="play-scatter-frame"><img src="images/play-justinjosh-monogram.jpg" alt="JB monogram crest designed for Joshua Monk and Justin Burgess's wedding"></div>
+      <div class="play-scatter-frame"><img src="images/play-justinjosh-invite-mockup-02.jpg" alt="Alternate wedding invitation mockup for Joshua Monk and Justin Burgess"></div>
+    </div>
+
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-qowboy-demo-02.jpg" alt="Qowboy typeface demo overlaid on a film still of two cowboys resting in a mountain pasture"></div>
+      <div class="play-scatter-frame"><img src="images/play-qowboy-demo-03.jpg" alt="Qowboy typeface demo reading 'Slow Burn' overlaid on a portrait photo"></div>
+      <div class="play-scatter-frame"><img src="images/play-qowboy-specimen.jpg" alt="Full character specimen sheet for Qowboy, a custom western display typeface, shown in an inverted colorway"></div>
+      <div class="play-scatter-frame play-scatter-frame--full-tablet"><img src="images/play-qowboy-alphabet.jpg" alt="Qowboy typeface uppercase alphabet specimen in a western slab-serif style, shown in an inverted colorway"></div>
+      <div class="play-scatter-frame play-scatter-frame--right"><img src="images/play-qowboy-demo-01.jpg" alt="Type specimen for the custom Qowboy typeface displayed in bold outlined lettering on a black background"></div>
+    </div>
+
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-kk-banner.jpg" alt="Karley Kimbro banner graphic"></div>
+      <div class="play-scatter-frame"><img src="images/play-kk-post-logo.png" alt="Karley Kimbro full logo lockup social post"></div>
+      <div class="play-scatter-frame"><img src="images/play-kk-logo.jpg" alt="Karley Kimbro logo"></div>
+      <div class="play-scatter-frame"><img src="images/play-kk-post-banner.png" alt="Karley Kimbro banner social post"></div>
+    </div>
+
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-painting-full.jpg" alt="Framed painting of a fish rising to catch a fly, signed 'Kyle P'"></div>
+      <div class="play-scatter-frame"><img src="images/play-painting-detail.jpg" alt="Detail crop of the fish's head from the same painting"></div>
+    </div>
+
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-illo-sun-figure.jpg" alt="Vintage tattoo-flash style line illustration of a radiant sun-crowned figure"></div>
+      <div class="play-scatter-frame"><img src="images/play-illo-boot.jpg" alt="Vintage tattoo-flash style line illustration of a cowboy boot"></div>
+      <div class="play-scatter-frame"><img src="images/play-illo-seahorse.jpg" alt="Vintage tattoo-flash style line illustration of a winged sea horse"></div>
+      <div class="play-scatter-frame"><img src="images/play-illo-snake.jpg" alt="Vintage tattoo-flash style line illustration of a coiled snake"></div>
+    </div>
+
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-founders-01.jpg" alt="'The Founders' concept poster series: engraved-style portrait card with a Latin motto and ivy border"></div>
+      <div class="play-scatter-frame"><img src="images/play-founders-02.jpg" alt="'The Founders' concept poster series, second portrait card in the set"></div>
+      <div class="play-scatter-frame"><img src="images/play-founders-03.jpg" alt="'The Founders' concept poster series, third portrait card in the set"></div>
+      <div class="play-scatter-set">
+        <div class="play-scatter-set-item"><img src="images/play-founders-05.jpg" alt="'The Founders' concept poster series, fourth portrait card in the set"></div>
+        <div class="play-scatter-set-item"><img src="images/play-founders-06.jpg" alt="'The Founders' concept poster series, fifth portrait card in the set"></div>
+        <div class="play-scatter-set-item"><img src="images/play-founders-07.jpg" alt="'The Founders' concept poster series, sixth portrait card in the set"></div>
+        <div class="play-scatter-set-item"><img src="images/play-founders-08.jpg" alt="'The Founders' concept poster series, seventh portrait card in the set"></div>
+      </div>
+    </div>
+
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-phdiva-logo.jpg" alt="'PhDiva' logo lockup: line-art illustration of a graduate embracing a diploma, framed by a disco ball and stars"></div>
+      <div class="play-scatter-frame"><img src="images/play-phdiva-spotify-cover.jpg" alt="'PhDIVA' repeating wordmark pattern, Spotify playlist cover art"></div>
+    </div>
+
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-portrait-morgan.jpg" alt="Illustrated portrait of a woman raising a cocktail glass"></div>
+      <div class="play-scatter-frame"><img src="images/play-portrait-thomas.jpg" alt="Illustrated portrait of a man spinning a basketball on his fingertip"></div>
+      <div class="play-scatter-frame"><img src="images/play-portrait-austin.jpg" alt="Illustrated portrait of a man holding a steaming coffee mug, with a pen tucked behind his ear"></div>
+      <div class="play-scatter-frame"><img src="images/play-portrait-kyle.jpg" alt="Illustrated self-portrait of a bearded man with a cat on his shoulder"></div>
+    </div>
+
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-wrapping-paper-group-mockup.jpg" alt="Group mockup of wrapped gift boxes in the Grain Finish wrapping paper collection"></div>
+      <div class="play-scatter-frame"><img src="images/play-wrapping-paper-santa.jpg" alt="Santa-themed wrapping paper design"></div>
+      <div class="play-scatter-frame"><img src="images/play-gf-monogram.jpg" alt="Grain Finish (GF) monogram logo"></div>
+      <div class="play-scatter-frame"><img src="images/play-wrapping-paper-diamond.jpg" alt="Red diamond-pattern wrapping paper design"></div>
+      <div class="play-scatter-frame"><img src="images/play-wrapping-paper-holly-blue.jpg" alt="Blue holly-pattern wrapping paper gift box with a burgundy ribbon"></div>
+      <div class="play-scatter-frame play-scatter-frame--lg"><img src="images/play-wrapping-paper-about.jpg" alt="Grain Finish wrapping paper collection swatches with brand story copy"></div>
+      <div class="play-scatter-frame"><img src="images/play-wrapping-paper-brown.jpg" alt="Brown plaid wrapping paper design with a GF logo badge"></div>
+      <div class="play-scatter-frame"><img src="images/play-wrapping-paper-red-stripe.jpg" alt="Red and cream striped wrapping paper roll"></div>
+      <div class="play-scatter-frame"><img src="images/play-wrapping-paper-green-stripe.jpg" alt="Green striped wrapping paper gift box mockup"></div>
+    </div>
+
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-semimade-home-interior.jpg" alt="Dark, moody gallery-wall interior photo for the Semimade Home brand"></div>
+      <div class="play-scatter-frame"><img src="images/play-semimade-home-cat.jpg" alt="Photo of a cat sitting on a painted staircase for the Semimade Home brand"></div>
+      <div class="play-scatter-frame"><img src="images/play-semimade-home-wordmark.jpg" alt="Semimade Home wordmark logo"></div>
+      <div class="play-scatter-frame"><img src="images/play-semimade-home-desk.jpg" alt="Styled home-office desk photo for the Semimade Home brand"></div>
+      <div class="play-scatter-frame"><img src="images/play-semimade-home-living-room.jpg" alt="Styled living room photo with textured throw pillows and blankets for the Semimade Home brand"></div>
+      <div class="play-scatter-frame"><img src="images/play-semimade-home-mirror.jpg" alt="Antiqued mirror and brass floor lamp styled photo for the Semimade Home brand"></div>
+      <div class="play-scatter-frame"><img src="images/play-semimade-home-plants.jpg" alt="Close-up photo of rubber plant leaves with 'Top Three Indoor Plants' text overlay for the Semimade Home brand"></div>
+    </div>
+
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-bachparty-tank-mockup.jpg" alt="Tank top mockups printed with the 'Drew's Last Bite' bachelor party design"></div>
+      <div class="play-scatter-frame"><img src="images/play-bachparty-tagline.jpg" alt="'Just make sure you come home in one peach!' tagline graphic for the 'Drew's Last Bite' bachelor party brand"></div>
+      <div class="play-scatter-frame"><img src="images/play-bachparty-badge.jpg" alt="Bachelor party badge design reading 'Drew's Last Bite, Savannah GA'"></div>
+      <div class="play-scatter-frame"><img src="images/play-bachparty-peach-illustration.jpg" alt="Line illustration of hands holding a peach for the 'Drew's Last Bite' bachelor party brand"></div>
+    </div>
+
+    <div class="play-scatter">
+      <div class="play-scatter-frame"><img src="images/play-cheers-illustration.png" alt="Playful 'Cheers!' illustration of a hot-dog character"></div>
+    </div>
+  </main>
+</div>
+
+<footer class="site-foot">
+  <span class="site-signature">kylpec.com</span>
+  <div class="foot-group">
+    <div class="foot-left"><span class="clock-time">7:42:00 PM</span></div>
+    <div class="foot-social">
+      <a href="mailto:kylejopeck@gmail.com">Email</a>
+      <a href="https://linkedin.com/in/kylejpeck" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://instagram.com/bykylpec" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

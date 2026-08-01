@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<script>
+  /* Restores the user's last-chosen theme before first paint, so
+     navigating between pages doesn't flash light and then flip to dark.
+     Runs as an inline, render-blocking script in <head> (not from
+     script.js, which loads at the end of body — too late to prevent the
+     flash) and only needs to handle the dark case, since every page's
+     <html> already ships with class="light" as its default. */
+  (function(){
+    try{
+      if(localStorage.getItem('theme') === 'dark'){
+        document.documentElement.classList.remove('light');
+      }
+    }catch(e){}
+  })();
+</script>
+<title>Editorial Campaign · Kyle Peck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Geist+Pixel:ELSH@1&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="site-nav">
+    <button class="theme-toggle mode-toggle" aria-label="Switch to dark mode" onclick="toggleTheme(this)">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4.3"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(45 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(90 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(135 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(180 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(225 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(270 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(315 12 12)"/></svg>
+      </button>
+      <span class="icon-btn-label icon-btn-label--mode" aria-hidden="true">MODE</span>
+      <button class="theme-toggle scroll-top" aria-label="Scroll to top">
+        <svg class="icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+      </button>
+      <span class="icon-btn-label icon-btn-label--top" aria-hidden="true">TOP</span>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html" aria-current="page">Work</a>
+        <a href="play.html">Play</a>
+        <a href="about.html">About</a>
+      </nav>
+      <span class="nav-current-dot" aria-hidden="true"></span>
+  </header>
+  <a class="brand-mark" href="index.html">K<span class="kern-left">Y</span>LE PECK</a>
+
+  <main>
+    <div class="project-detail-head">
+      <h1>Editorial Campaign</h1>
+      <p class="project-subtitle">An annual report and supporting campaign for a national healthcare company, combining custom photography, publication design, and motion.</p>
+
+      <div class="pills">
+        <span class="tag-lg">Art Direction</span>
+        <span class="tag-lg">Publication Design</span>
+        <span class="tag-lg">Storytelling</span>
+        <span class="tag-lg">Motion</span>
+      </div>
+    </div>
+
+    <div class="project-detail-hero" style="--hero-ratio:2600/779;">
+      <picture>
+        <source media="(max-width:639px)" srcset="images/hca-hero-mobile.jpg">
+        <img src="images/hca-hero.jpg" alt="Repeated mockup of the HCA Healthcare Annual Impact Report cover, featuring a nurse portrait and an orange accent bar" data-parallax="90" data-parallax-buffer="12">
+      </picture>
+    </div>
+
+    <div class="project-detail-body">
+      <div class="split-section no-col-divider split-section--brand">
+        <div class="split-col">
+          <h2 class="section-label">Brand</h2>
+          <div class="identity-showcase identity-showcase--full">
+            <img src="images/hca-logo.png" alt="HCA Healthcare logo">
+          </div>
+        </div>
+        <div class="split-col">
+          <h2 class="section-label">Overview</h2>
+          <p>With nearly 200 hospitals and more than 2,500 sites of care, HCA Healthcare is one of the nation&rsquo;s leading healthcare providers. During COVID-19, its annual report needed to convey that scale without losing sight of the people behind the numbers.</p>
+          <p>The creative strategy balanced visual impact with restraint, remaining sensitive to the uncertainty and human weight of the moment. Building on HCA Healthcare&rsquo;s identity, the direction brought clinical outcomes, workforce initiatives, public policy, community investment, and individual stories into one cohesive publication and campaign.</p>
+          <div class="split-col-stack no-divider">
+            <h2 class="section-label">My Role</h2>
+            <p>I led the art direction and design across the project, establishing the editorial system design and photoshoot direction. The work was developed in collaboration with creative leadership, internal communications, and executive leadership throughout review and final approval.</p>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-label no-divider">Custom Photography</h2>
+      <p>The photography aimed to capture the character and resilience of the people behind the organization while remaining sensitive to the uncertainty and emotional weight of the COVID-19 pandemic.</p>
+      <div class="photo-grid photo-grid--wide cols-2-desktop">
+        <img src="images/hca-photography-01.jpg" alt="Clinician standing on an outdoor walkway outside a hospital building">
+        <img src="images/hca-photography-03.jpg" alt="Healthcare worker in full PPE sanitizing hands beside a supply cart in a hospital hallway">
+        <img src="images/hca-photography-04.jpg" alt="Nurse caring for a masked patient in a hospital room">
+        <img src="images/hca-photography-05.jpg" alt="Employee working at a laptop in a bright, glass-walled office space">
+        <img src="images/hca-photography-06.jpg" alt="Close-up of a clinician's gloved hands adjusting medical equipment">
+        <img src="images/hca-photography-07.jpg" alt="Hospital food service worker carrying a meal tray down a hallway">
+        <img src="images/hca-photography-08.jpg" alt="Three nurses in scrubs and masks standing outdoors with arms crossed, overlooking a wooded landscape">
+        <img src="images/hca-photography-09.jpg" alt="Physician in a white coat and mask speaking on the phone outside a medical building">
+      </div>
+      <dl class="contributors">
+        <dt>Art Direction</dt>
+        <dd>Bethany Hagans, Kyle Peck</dd>
+        <dt>Photographer</dt>
+        <dd>Abigail Bobo</dd>
+      </dl>
+
+      <h2 class="section-label">Editorial Direction</h2>
+      <p>Expanding on HCA Healthcare&rsquo;s established visual identity, I set the art direction for the report, creating a flexible system of hierarchy and layout that moved between dense reporting, feature narratives, photography, and statistics.</p>
+      <p>The final publication was shaped through close collaboration with creative management, communications, and executive leadership.</p>
+      <div class="masonry-grid">
+        <div class="masonry-col">
+          <img src="images/hca-editorial-01.jpg" alt="Contents spread of the HCA Healthcare Annual Impact Report, with a navy index page and a pull-quote from a frontline nurse">
+          <img src="images/hca-editorial-04.jpg" alt="Report spread titled 'Mental wellness' with a pull-quote and nurse portrait, paired with a bold navy graphic spread reading 'Protecting our colleagues and physicians'">
+        </div>
+        <div class="masonry-col">
+          <img src="images/hca-editorial-02.jpg" alt="Bold orange section-break spread reading 'Being there for our patients', paired with a 'Partnering with our physicians' spread featuring program statistics and a portrait of a physician on the phone">
+          <img src="images/hca-editorial-03.jpg" alt="Report spread titled 'Utilizing data to inform decisions' with line charts, paired with a CARES Act funding spread featuring a photo of the U.S. Capitol and a large stat callout">
+        </div>
+      </div>
+
+      <h3 class="photo-group-label diagram-label">Extractions from Summary Video</h3>
+      <div class="motion-grid">
+        <video autoplay loop muted playsinline poster="images/hca-motion-1-poster.jpg">
+          <source src="images/hca-motion-1.mp4" type="video/mp4">
+        </video>
+        <video autoplay loop muted playsinline poster="images/hca-motion-2-poster.jpg">
+          <source src="images/hca-motion-2.mp4" type="video/mp4">
+        </video>
+        <video autoplay loop muted playsinline poster="images/hca-motion-3-poster.jpg">
+          <source src="images/hca-motion-3.mp4" type="video/mp4">
+        </video>
+      </div>
+
+      <h3 class="photo-group-label diagram-label">Full Report</h3>
+      <div class="report-pages-grid">
+        <img src="images/hca-page-01.jpg" alt="HCA Healthcare Annual Impact Report, page 1">
+        <img src="images/hca-page-02.jpg" alt="HCA Healthcare Annual Impact Report, page 2">
+        <img src="images/hca-page-03.jpg" alt="HCA Healthcare Annual Impact Report, page 3">
+        <img src="images/hca-page-04.jpg" alt="HCA Healthcare Annual Impact Report, page 4">
+        <img src="images/hca-page-05.jpg" alt="HCA Healthcare Annual Impact Report, page 5">
+        <img src="images/hca-page-06.jpg" alt="HCA Healthcare Annual Impact Report, page 6">
+        <img src="images/hca-page-07.jpg" alt="HCA Healthcare Annual Impact Report, page 7">
+        <img src="images/hca-page-08.jpg" alt="HCA Healthcare Annual Impact Report, page 8">
+        <img src="images/hca-page-09.jpg" alt="HCA Healthcare Annual Impact Report, page 9">
+        <img src="images/hca-page-10.jpg" alt="HCA Healthcare Annual Impact Report, page 10">
+        <img src="images/hca-page-11.jpg" alt="HCA Healthcare Annual Impact Report, page 11">
+        <img src="images/hca-page-12.jpg" alt="HCA Healthcare Annual Impact Report, page 12">
+        <img src="images/hca-page-13.jpg" alt="HCA Healthcare Annual Impact Report, page 13">
+        <img src="images/hca-page-14.jpg" alt="HCA Healthcare Annual Impact Report, page 14">
+        <img src="images/hca-page-15.jpg" alt="HCA Healthcare Annual Impact Report, page 15">
+        <img src="images/hca-page-16.jpg" alt="HCA Healthcare Annual Impact Report, page 16">
+        <img src="images/hca-page-17.jpg" alt="HCA Healthcare Annual Impact Report, page 17">
+        <img src="images/hca-page-18.jpg" alt="HCA Healthcare Annual Impact Report, page 18">
+        <img src="images/hca-page-19.jpg" alt="HCA Healthcare Annual Impact Report, page 19">
+        <img src="images/hca-page-20.jpg" alt="HCA Healthcare Annual Impact Report, page 20">
+        <img src="images/hca-page-21.jpg" alt="HCA Healthcare Annual Impact Report, page 21">
+        <img src="images/hca-page-22.jpg" alt="HCA Healthcare Annual Impact Report, page 22">
+        <img src="images/hca-page-23.jpg" alt="HCA Healthcare Annual Impact Report, page 23">
+        <img src="images/hca-page-24.jpg" alt="HCA Healthcare Annual Impact Report, page 24">
+        <img src="images/hca-page-25.jpg" alt="HCA Healthcare Annual Impact Report, page 25">
+        <img src="images/hca-page-26.jpg" alt="HCA Healthcare Annual Impact Report, page 26">
+        <img src="images/hca-page-27.jpg" alt="HCA Healthcare Annual Impact Report, page 27">
+        <img src="images/hca-page-28.jpg" alt="HCA Healthcare Annual Impact Report, page 28">
+        <img src="images/hca-page-29.jpg" alt="HCA Healthcare Annual Impact Report, page 29">
+        <img src="images/hca-page-30.jpg" alt="HCA Healthcare Annual Impact Report, page 30">
+        <img src="images/hca-page-31.jpg" alt="HCA Healthcare Annual Impact Report, page 31">
+      </div>
+    </div>
+    <nav class="project-pagination" aria-label="Project navigation">
+      <a class="project-pagination-link project-pagination-prev" href="project-05.html">
+        <span class="ppl-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span>
+        <span class="ppl-text"><span class="ppl-label">Previous</span><span class="ppl-title">CTV Spot</span></span>
+      </a>
+      <a class="project-pagination-link project-pagination-next" href="project-03.html">
+        <span class="ppl-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></span>
+        <span class="ppl-text"><span class="ppl-label">Next</span><span class="ppl-title">Ethnographic Research</span></span>
+      </a>
+    </nav>
+  </main>
+</div>
+
+<footer class="site-foot">
+  <span class="site-signature">kylpec.com</span>
+  <div class="foot-group">
+    <div class="foot-left"><span class="clock-time">7:42:00 PM</span></div>
+    <div class="foot-social">
+      <a href="mailto:kylejopeck@gmail.com">Email</a>
+      <a href="https://linkedin.com/in/kylejpeck" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://instagram.com/bykylpec" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

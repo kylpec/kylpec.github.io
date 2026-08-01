@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<script>
+  /* Restores the user's last-chosen theme before first paint, so
+     navigating between pages doesn't flash light and then flip to dark.
+     Runs as an inline, render-blocking script in <head> (not from
+     script.js, which loads at the end of body — too late to prevent the
+     flash) and only needs to handle the dark case, since every page's
+     <html> already ships with class="light" as its default. */
+  (function(){
+    try{
+      if(localStorage.getItem('theme') === 'dark'){
+        document.documentElement.classList.remove('light');
+      }
+    }catch(e){}
+  })();
+</script>
+<title>Kyle Peck — Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Geist+Pixel:ELSH@1&family=Roboto+Mono:wght@400;500;600&family=Xanh+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="site-nav">
+    <button class="theme-toggle mode-toggle" aria-label="Switch to dark mode" onclick="toggleTheme(this)">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4.3"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(45 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(90 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(135 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(180 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(225 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(270 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(315 12 12)"/></svg>
+      </button>
+      <span class="icon-btn-label icon-btn-label--mode" aria-hidden="true">MODE</span>
+      <button class="theme-toggle scroll-top" aria-label="Scroll to top">
+        <svg class="icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+      </button>
+      <span class="icon-btn-label icon-btn-label--top" aria-hidden="true">TOP</span>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html" aria-current="page">Work</a>
+        <a href="play.html">Play</a>
+        <a href="about.html">About</a>
+      </nav>
+      <span class="nav-current-dot" aria-hidden="true"></span>
+  </header>
+  <a class="brand-mark" href="index.html">K<span class="kern-left">Y</span>LE PECK</a>
+
+  <main>
+    <div class="hero">
+      <h1 class="hero-paragraph">I'm Kyle, a multidisciplinary designer working across <span class="accent">brand</span> strategy, <span class="accent">visual</span> systems, and <span class="accent">creative</span> direction, shaping work that is thoughtful in concept and considered in the details.</h1>
+      <p class="location-line"><svg width="10" height="13" viewBox="0 0 10 13" fill="none" aria-hidden="true"><path d="M5 0.5C2.51 0.5 0.5 2.51 0.5 5c0 3.5 4.5 7.2 4.5 7.2s4.5-3.7 4.5-7.2c0-2.49-2.01-4.5-4.5-4.5Z" stroke="currentColor" stroke-width="1" fill="none"/><circle cx="5" cy="5" r="1.5" stroke="currentColor" stroke-width="1" fill="none"/></svg>Nashville, TN</p>
+    </div>
+
+    <div class="work-head" id="work-marker">
+      <h2>Selected Work</h2>
+      <span>5 PROJECTS</span>
+    </div>
+
+    <div class="work-list">
+      <div class="project-card"><a href="project-01.html">
+        <div class="project-img-wrap"><img class="project-img" src="images/project-01-thumbnail.jpg" alt="A bald eagle perched on a weathered post, echoing the eagle mark in First American's logo"></div>
+        <div class="project-meta">
+          <span class="project-number">01</span>
+          <span class="tag">Enterprise Brand System</span>
+        </div>
+      </a></div>
+
+      <div class="project-card"><a href="project-05.html">
+        <div class="project-img-wrap"><img class="project-img" src="images/project-05-thumbnail.jpg" alt="Close-up of a woman with a shocked expression holding scissors up to her hair in a bathroom mirror, from the CTV Spot commercial"></div>
+        <div class="project-meta">
+          <span class="project-number">02</span>
+          <span class="tag">CTV Spot</span>
+        </div>
+      </a></div>
+
+      <div class="project-card"><a href="project-04.html">
+        <div class="project-img-wrap"><img class="project-img" src="images/project-04-thumbnail.jpg" alt="Editorial Campaign project"></div>
+        <div class="project-meta">
+          <span class="project-number">03</span>
+          <span class="tag">Editorial Campaign</span>
+        </div>
+      </a></div>
+
+      <div class="project-card"><a href="project-03.html">
+        <div class="project-img-wrap"><img class="project-img" src="images/project-03-thumbnail.jpg" alt="Smartphone mounted on a car dashboard displaying the Uber driver app set to offline over a map"></div>
+        <div class="project-meta">
+          <span class="project-number">04</span>
+          <span class="tag">Ethnographic Research</span>
+        </div>
+      </a></div>
+
+      <div class="project-card"><a href="project-02.html">
+        <div class="project-img-wrap"><img class="project-img" src="images/project-02-thumbnail.jpg" alt="Product Design project"></div>
+        <div class="project-meta">
+          <span class="project-number">05</span>
+          <span class="tag">Product Design</span>
+        </div>
+      </a></div>
+    </div>
+  </main>
+</div>
+
+<footer class="site-foot">
+  <span class="site-signature">kylpec.com</span>
+  <div class="foot-group">
+    <div class="foot-left"><span class="clock-time">7:42:00 PM</span></div>
+    <div class="foot-social">
+      <a href="mailto:kylejopeck@gmail.com">Email</a>
+      <a href="https://linkedin.com/in/kylejpeck" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://instagram.com/bykylpec" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

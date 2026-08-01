@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<script>
+  /* Restores the user's last-chosen theme before first paint, so
+     navigating between pages doesn't flash light and then flip to dark.
+     Runs as an inline, render-blocking script in <head> (not from
+     script.js, which loads at the end of body — too late to prevent the
+     flash) and only needs to handle the dark case, since every page's
+     <html> already ships with class="light" as its default. */
+  (function(){
+    try{
+      if(localStorage.getItem('theme') === 'dark'){
+        document.documentElement.classList.remove('light');
+      }
+    }catch(e){}
+  })();
+</script>
+<title>Brand Identity — Kyle Peck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Geist+Pixel:ELSH@1&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="site-nav">
+    <button class="theme-toggle mode-toggle" aria-label="Switch to dark mode" onclick="toggleTheme(this)">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4.3"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(45 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(90 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(135 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(180 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(225 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(270 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(315 12 12)"/></svg>
+      </button>
+      <span class="icon-btn-label icon-btn-label--mode" aria-hidden="true">MODE</span>
+      <button class="theme-toggle scroll-top" aria-label="Scroll to top">
+        <svg class="icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+      </button>
+      <span class="icon-btn-label icon-btn-label--top" aria-hidden="true">TOP</span>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html" aria-current="page">Work</a>
+        <a href="play.html">Play</a>
+        <a href="about.html">About</a>
+      </nav>
+      <span class="nav-current-dot" aria-hidden="true"></span>
+  </header>
+  <a class="brand-mark" href="index.html">K<span class="kern-left">Y</span>LE PECK</a>
+
+  <main>
+    <div class="project-detail-head">
+      <span class="tag">Brand Identity</span>
+      <h1>[Project title goes here — Brand Identity]</h1>
+      <div class="project-hero"><img src="images/project-06-brand-identity-3.jpg" alt="Brand Identity project, image 1"></div>
+    </div>
+
+    <div class="project-detail-body">
+      <h2 class="section-label">Overview</h2>
+      <p>[Add a short overview of this project — the brief, the challenge, and what you were asked to solve.]</p>
+
+      <h2 class="section-label">Approach</h2>
+      <p>[Describe your process and the key decisions that shaped the outcome.]</p>
+
+      <div class="project-meta-grid">
+        <div class="cv-row">
+          <div class="cv-title">Client</div>
+          <div class="cv-company">[Client name]</div>
+        </div>
+        <div class="cv-row">
+          <div class="cv-title">Role</div>
+          <div class="cv-company">[Your role]</div>
+        </div>
+        <div class="cv-row">
+          <div class="cv-title">Year</div>
+          <div class="cv-company">[Year]</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<footer class="site-foot">
+  <span class="site-signature">kylpec.com</span>
+  <div class="foot-group">
+    <div class="foot-left"><span class="clock-time">7:42:00 PM</span></div>
+    <div class="foot-social">
+      <a href="mailto:kylejopeck@gmail.com">Email</a>
+      <a href="https://linkedin.com/in/kylejpeck" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://instagram.com/bykylpec" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
