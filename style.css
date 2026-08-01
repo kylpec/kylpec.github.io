@@ -600,17 +600,20 @@ footer.site-foot{
 /* signature sits outside the photo's clipped bounds (hence living in
    .about-photo-frame rather than inside .about-photo-secondary), anchored
    with left/width percentages so it scales and overlaps proportionally
-   regardless of the photo's rendered size. On mobile the frame has no
-   max-width (photo runs the full content width), so there's no free
-   space beside it — the signature sits mostly on top of the photo's
-   lower-right corner instead of spilling past the viewport edge. From
+   regardless of the photo's rendered size. Being position:absolute, it
+   never adds to .about-photo-frame's document-flow height, so it can
+   hang below the photo without pushing the "Nashville, TN" line down —
+   it just floats over whatever comes next.
+   On mobile the frame has no max-width (photo runs the full content
+   width), so there's no free space beside it — the signature instead
+   sits mostly below the photo, overlapping just its bottom edge. From
    640px up, where the frame is capped and there's room beside it, it
-   shifts to sit mostly in that whitespace with only a slight overlap,
+   shifts up and over to sit mostly in that whitespace to the right,
    matching the reference. Inverts to white in dark mode via the same
    filter trick used for the brand logos elsewhere (solid-black art on a
    transparent background). */
 .about-signature{
-  position:absolute; top:62%; left:58%; width:34%; height:auto;
+  position:absolute; top:96%; left:53%; width:46%; height:auto;
   pointer-events:none; z-index:2;
 }
 @media (min-width:640px){
@@ -1065,15 +1068,25 @@ h2.section-label.no-divider::before{ display:none; }
    aligned like the rest of the site, contained to a readable column
    rather than spanning full width. */
 /* Centered on screen (horizontally via margin:auto, vertically by making
-   the gate itself a flex container sized to at least the viewport height
-   below the fixed nav) rather than following the site's usual left-aligned
-   convention — this is a one-off interstitial screen, not regular page
-   content, so it reads better as a centered "stop" moment. */
+   the gate itself a flex container) rather than following the site's
+   usual left-aligned convention — this is a one-off interstitial screen,
+   not regular page content, so it reads better as a centered "stop"
+   moment.
+   min-height is the full 100vh, not "100vh minus the nav" — main already
+   has padding-top:var(--nav-height) to keep normal content clear of the
+   fixed nav, and if the gate just filled that remaining (100vh - nav)
+   space, centering within it would land the content nav-height/2 below
+   true screen-center (that space's midpoint isn't the viewport's
+   midpoint). The negative top margin here cancels out main's padding-top
+   just for this element, so the gate's box actually spans the full
+   viewport (its top half sits behind the fixed nav, which is fine since
+   the nav has a higher z-index and there's no visible gate background/
+   border up there) and centers within that instead. */
 .password-gate{
-  min-height:calc(100vh - var(--nav-height));
+  min-height:100vh;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center;
-  padding:40px 0; max-width:480px; margin:0 auto;
+  padding:40px 0; max-width:480px; margin:calc(-1 * var(--nav-height)) auto 0;
 }
 /* the browser's own default stylesheet hides [hidden] elements via
    display:none, but that rule and .password-gate's own display:flex
@@ -2222,6 +2235,36 @@ html:not(.light) .identity-showcase--full img[src*="smiledirectclub-logo"]{
   border:1px dashed var(--ink-soft); border-radius:4px; padding:16px 20px; margin:16px 0 28px;
   font-family:var(--sans); font-size:13px; color:var(--ink-soft); max-width:680px; line-height:1.6;
 }
+
+/* ---- LIGHTBOX ----
+   Single reused overlay (see initLightbox in script.js) rather than a
+   modal per image. Always a dark backdrop regardless of site theme —
+   the point is an image-viewing overlay, not themed page chrome, and a
+   dark scrim is what makes photos read clearly in either mode.
+   z-index:100 clears every other fixed element on the site (nav/mode-
+   toggle top out at 70). The image uses object-fit:contain (rather than
+   the cover-cropped thumbnails it's triggered from) so the full photo is
+   what actually shows enlarged, letterboxed as needed instead of cropped
+   again at the larger size. */
+.lightbox-overlay{
+  position:fixed; inset:0; z-index:100;
+  background:rgba(10,10,10,.92);
+  display:flex; align-items:center; justify-content:center;
+  padding:40px var(--gutter);
+}
+.lightbox-overlay[hidden]{ display:none; }
+.lightbox-img{
+  max-width:100%; max-height:100%; width:auto; height:auto;
+  object-fit:contain; display:block; border-radius:4px;
+}
+.lightbox-close{
+  position:fixed; top:var(--gutter); right:var(--gutter); z-index:101;
+  width:44px; height:44px; border-radius:50%; border:none;
+  background:rgba(255,255,255,.1); color:#FFFFFF; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.lightbox-close:hover{ background:rgba(255,255,255,.18); }
+.lightbox-close svg{ width:20px; height:20px; }
 
 @media (min-width:640px){
   .hero h1{ font-size:40px; }

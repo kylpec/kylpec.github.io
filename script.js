@@ -419,6 +419,61 @@ function initEncryptedGates(){
 }
 document.addEventListener('DOMContentLoaded', initEncryptedGates);
 
+/* Click-to-expand lightbox — scoped to any grid container marked with
+   data-lightbox (currently: .report-pages-grid on the Editorial Campaign
+   page's "Full Report" spread, and the "Research Synthesis" .photo-grid
+   on the Ethnographic Research page), rather than every image on the
+   site, since most of the site's photo grids are meant to stay inline.
+   A single overlay/modal pair is built once and reused for every click
+   rather than creating one per image. The clicked <img>'s src/alt are
+   copied into the modal's own <img>, which uses object-fit:contain (the
+   source grids crop with cover) so the full, uncropped photo is what
+   actually shows enlarged. */
+function initLightbox(){
+  const triggers = document.querySelectorAll('[data-lightbox] img');
+  if(!triggers.length) return;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'lightbox-overlay';
+  overlay.hidden = true;
+  overlay.innerHTML = `
+    <button class="lightbox-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+    </button>
+    <img class="lightbox-img" alt="">
+  `;
+  document.body.appendChild(overlay);
+  const img = overlay.querySelector('.lightbox-img');
+  const closeBtn = overlay.querySelector('.lightbox-close');
+  let lastFocused = null;
+
+  function open(src, alt){
+    img.src = src;
+    img.alt = alt || '';
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+    lastFocused = document.activeElement;
+    closeBtn.focus();
+  }
+  function close(){
+    overlay.hidden = true;
+    img.src = '';
+    document.body.style.overflow = '';
+    if(lastFocused) lastFocused.focus();
+  }
+
+  triggers.forEach(el => {
+    el.style.cursor = 'zoom-in';
+    el.addEventListener('click', () => open(el.currentSrc || el.src, el.alt));
+  });
+  closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', e => { if(e.target === overlay) close(); });
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && !overlay.hidden) close();
+  });
+}
+document.addEventListener('DOMContentLoaded', initLightbox);
+
 function updateClocks(){
   const now = new Date();
   const parts = new Intl.DateTimeFormat('en-US', {
