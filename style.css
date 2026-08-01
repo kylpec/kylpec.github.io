@@ -2012,7 +2012,11 @@ html.light .illustration-wrap.gb-spot-wrap{ background:var(--panel); }
    spacing above the whole row that each used to supply individually. */
 .case-stats-row{
   display:flex; flex-wrap:wrap; justify-content:space-between; align-items:start;
-  gap:40px 64px; margin-top:64px;
+  /* row-gap and column-gap both 64px now — row-gap is what actually
+     shows between credits and stats on mobile once they wrap onto
+     separate lines (column-gap only applies to the side-by-side desktop
+     layout, where it was already 64px). */
+  gap:64px; margin-top:64px;
 }
 .case-stats-row .contributors{ margin-top:0; }
 .case-stats-row .stat-grid{ margin-top:0; }
