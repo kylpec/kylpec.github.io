@@ -569,12 +569,38 @@ footer.site-foot{
   overflow:hidden;
 }
 .about-photo-img{ width:100%; height:100%; object-fit:cover; display:block; }
+/* wrapper carries the sizing/margin previously on .about-photo-secondary
+   directly, so the signature below can be positioned absolutely relative
+   to it without being clipped by the photo's own overflow:hidden. */
+.about-photo-frame{
+  position:relative; margin:32px 0;
+}
+@media (min-width:640px){ .about-photo-frame{ max-width:480px; } }
+@media (min-width:1024px){ .about-photo-frame{ max-width:600px; } }
 .about-photo-secondary{
-  aspect-ratio:2905/2374; margin:32px 0; border:1px solid var(--ink); box-sizing:border-box;
+  aspect-ratio:2905/2374; margin:0; border:1px solid var(--ink); box-sizing:border-box;
   border-radius:8px;
 }
-@media (min-width:640px){ .about-photo-secondary{ max-width:480px; } }
-@media (min-width:1024px){ .about-photo-secondary{ max-width:600px; } }
+/* signature sits outside the photo's clipped bounds (hence living in
+   .about-photo-frame rather than inside .about-photo-secondary), anchored
+   with left/width percentages so it scales and overlaps proportionally
+   regardless of the photo's rendered size. On mobile the frame has no
+   max-width (photo runs the full content width), so there's no free
+   space beside it — the signature sits mostly on top of the photo's
+   lower-right corner instead of spilling past the viewport edge. From
+   640px up, where the frame is capped and there's room beside it, it
+   shifts to sit mostly in that whitespace with only a slight overlap,
+   matching the reference. Inverts to white in dark mode via the same
+   filter trick used for the brand logos elsewhere (solid-black art on a
+   transparent background). */
+.about-signature{
+  position:absolute; top:62%; left:58%; width:34%; height:auto;
+  pointer-events:none; z-index:2;
+}
+@media (min-width:640px){
+  .about-signature{ top:18%; left:80%; width:42%; }
+}
+html:not(.light) .about-signature{ filter:invert(1); }
 .about-p{ font-family:var(--sans); font-size:16px; line-height:1.7; color:var(--ink-soft); margin-bottom:18px; }
 .about-p b{ color:var(--ink); font-weight:600; }
 
@@ -1033,6 +1059,16 @@ h2.section-label.no-divider::before{ display:none; }
   text-align:center;
   padding:40px 0; max-width:480px; margin:0 auto;
 }
+/* the browser's own default stylesheet hides [hidden] elements via
+   display:none, but that rule and .password-gate's own display:flex
+   above have equal specificity (one class, one attribute selector) — at
+   equal specificity the later-cascading author stylesheet (this file)
+   wins over the earlier user-agent one, so display:flex was silently
+   overriding display:none and leaving the gate visibly on-screen even
+   after JS set gate.hidden = true (initEncryptedGates in script.js).
+   This rule's higher specificity (class + attribute) restores the
+   expected hide-when-hidden behavior. */
+.password-gate[hidden]{ display:none; }
 .password-gate h1{
   font-family:var(--sans); font-weight:400; font-size:32px; line-height:1.05;
   letter-spacing:-.03em; color:var(--ink); margin-bottom:24px;
@@ -1323,16 +1359,17 @@ h2.section-label.no-divider::before{ display:none; }
 /* Executions grid (SmileDirectClub) — same column-count masonry technique
    as .masonry-gallery above (native aspect ratios, no cropping, each item
    just flows into the shortest column), but with its own column counts:
-   2 up on mobile, 5 from tablet, 6 from desktop, per this section's own
+   2 up on mobile, 4 from tablet and desktop, per this section's own
    spec rather than the 2/2/4 the base gallery uses elsewhere. */
 .executions-masonry{
   column-count:2; column-gap:12px; margin-top:32px;
 }
 .executions-masonry img{
   width:100%; height:auto; display:block; margin-bottom:12px; break-inside:avoid; background:var(--panel); border-radius:6px;
+  border:1px solid color-mix(in srgb, var(--ink) 15%, transparent);
 }
-@media (min-width:640px){ .executions-masonry{ column-count:5; } }
-@media (min-width:1024px){ .executions-masonry{ column-count:6; } }
+@media (min-width:640px){ .executions-masonry{ column-count:4; } }
+@media (min-width:1024px){ .executions-masonry{ column-count:4; } }
 
 /* spot illustration examples — per brand guidelines these sit on a white
    card regardless of page theme; in dark mode the card flips to black
