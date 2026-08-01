@@ -287,7 +287,8 @@ window.addEventListener('load', updateBgFade);
 // page source, so anyone determined enough can read them via view-source.
 // It's meant to keep NDA'd client work out of casual browsing/search
 // indexing (paired with a noindex meta tag on the gated page), not to
-// withstand an actual attacker.
+// withstand an actual attacker. For content that actually needs to stay
+// unreadable without the password, use initEncryptedGates below instead.
 // Usage: <div data-password-gate="thepassword" data-gate-content="idOfContentToReveal">
 function initPasswordGates(){
   document.querySelectorAll('[data-password-gate]').forEach(gate => {
@@ -323,6 +324,106 @@ function initPasswordGates(){
   });
 }
 document.addEventListener('DOMContentLoaded', initPasswordGates);
+
+// Real client-side encryption gate — unlike initPasswordGates above, the
+// protected markup never ships in the page source in readable form at
+// all. It's AES-GCM ciphertext (key derived from the password via
+// PBKDF2-SHA256), embedded in a <script type="application/json"> tag
+// alongside the gate. Without the correct password there's nothing to
+// view-source or inspect-element your way around — decryption genuinely
+// fails (AES-GCM's built-in authentication tag catches a wrong key), so
+// there's no separate "check the password" step to bypass.
+//
+// The ciphertext is generated offline (a Node script using the same
+// Web Crypto API, not shipped to the site) — this function only ever
+// decrypts, never encrypts.
+//
+// Because the gated markup doesn't exist in the DOM until decrypted, any
+// page behavior that wires itself up by querying the DOM on
+// DOMContentLoaded (scroll-reveal, parallax) runs before this content
+// exists and finds nothing to do. Re-invoking those init functions after
+// a successful unlock (they're written to be safely callable more than
+// once) picks up the newly-injected elements so this content gets the
+// same enhancements as every other project page.
+//
+// Usage: <div data-encrypted-gate data-gate-content="idOfEmptyContainer">
+//        + <script type="application/json" id="idOfEmptyContainer-cipher">
+//            {"salt":"...","iv":"...","ciphertext":"...","iterations":200000}
+//          </script>
+function initEncryptedGates(){
+  document.querySelectorAll('[data-encrypted-gate]').forEach(gate => {
+    const contentId = gate.getAttribute('data-gate-content');
+    const content = document.getElementById(contentId);
+    const cipherEl = document.getElementById(contentId + '-cipher');
+    if(!content || !cipherEl) return;
+
+    let payload;
+    try { payload = JSON.parse(cipherEl.textContent); }
+    catch(e){ return; }
+
+    // sessionStorage, not localStorage — remembers the unlock for the
+    // rest of this browser session (so a refresh doesn't re-prompt) but
+    // doesn't persist indefinitely on a shared/public machine.
+    const storageKey = 'gate-pw:' + (gate.id || contentId);
+    const form = gate.querySelector('form');
+    const input = gate.querySelector('input[type="password"]');
+    const error = gate.querySelector('.password-gate-error');
+
+    function fromBase64(str){
+      const bin = atob(str);
+      const bytes = new Uint8Array(bin.length);
+      for(let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return bytes;
+    }
+
+    async function tryUnlock(password){
+      try {
+        const enc = new TextEncoder();
+        const baseKey = await crypto.subtle.importKey(
+          'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
+        );
+        const aesKey = await crypto.subtle.deriveKey(
+          { name:'PBKDF2', salt: fromBase64(payload.salt), iterations: payload.iterations, hash:'SHA-256' },
+          baseKey, { name:'AES-GCM', length:256 }, false, ['decrypt']
+        );
+        const plainBuf = await crypto.subtle.decrypt(
+          { name:'AES-GCM', iv: fromBase64(payload.iv) }, aesKey, fromBase64(payload.ciphertext)
+        );
+        content.innerHTML = new TextDecoder().decode(plainBuf);
+        content.hidden = false;
+        gate.hidden = true;
+        sessionStorage.setItem(storageKey, password);
+        if(typeof initScrollReveal === 'function') initScrollReveal();
+        if(typeof initParallax === 'function') initParallax();
+        return true;
+      } catch(e){
+        // Wrong password (or corrupt data) — AES-GCM's auth tag makes
+        // decrypt itself fail rather than silently returning garbage.
+        return false;
+      }
+    }
+
+    const remembered = sessionStorage.getItem(storageKey);
+    if(remembered){
+      tryUnlock(remembered).then(ok => { if(!ok) sessionStorage.removeItem(storageKey); });
+    }
+
+    if(form){
+      form.addEventListener('submit', async e => {
+        e.preventDefault();
+        const btn = form.querySelector('button[type="submit"]');
+        if(btn) btn.disabled = true;
+        const ok = await tryUnlock(input ? input.value : '');
+        if(btn) btn.disabled = false;
+        if(!ok){
+          if(error) error.hidden = false;
+          if(input){ input.value = ''; input.focus(); }
+        }
+      });
+    }
+  });
+}
+document.addEventListener('DOMContentLoaded', initEncryptedGates);
 
 function updateClocks(){
   const now = new Date();
