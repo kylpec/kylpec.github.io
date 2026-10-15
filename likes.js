@@ -33,7 +33,7 @@
       var d = document.createElement('span');
       d.className = 'lb-dot' + (i % 2 ? ' lb-dot--sm' : '');
       d.style.setProperty('--a', ((360 / n) * i + (Math.random() * 16 - 8)) + 'deg');
-      d.style.setProperty('--d', (i % 2 ? 22 : 34) + Math.random() * 12 + 'px');
+      d.style.setProperty('--d', (i % 2 ? 16 : 26) + Math.random() * 10 + 'px');
       d.style.animationDelay = (i % 2 ? 50 : 0) + 'ms';
       b.appendChild(d);
     }

@@ -62,12 +62,21 @@
     <nav class="post-index" aria-label="All writing"></nav>
     <article class="post-main">
     <div class="project-detail-head">
-      <div class="post-music">
-        <iframe data-testid="embed-iframe" title="Spotify player" style="border-radius:12px" src="https://open.spotify.com/embed/track/2LfIvkV7kBvqo3tx1H9sqw?utm_source=generator&si=75b6a4548c5f43e4" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-      </div>
       <h1>Sample Post Title</h1>
       <p class="project-subtitle">A one-line summary of the post goes here.</p>
       <p class="post-date"><time datetime="2026-10-15">10.15.2026</time></p>
+      <a class="post-music" href="https://open.spotify.com/track/2LfIvkV7kBvqo3tx1H9sqw" target="_blank" rel="noopener">
+        <span class="post-music-label">Pairs well with</span>
+        <span class="post-music-row">
+          <img class="post-music-cover" src="https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02c34069171a72f8a174f4171d" alt="" width="300" height="300">
+          <span class="post-music-text">
+            <span class="post-music-song">Can&rsquo;t Get Over Losing You (feat. Portraits Of Tracy)</span>
+            <span class="post-music-artist">The Avalanches</span>
+          </span>
+          <svg class="post-music-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>
+        </span>
+        <span class="visually-hidden">(opens in Spotify)</span>
+      </a>
     </div>
 
     <div class="post-hero">
@@ -91,6 +100,10 @@
       </div>
 
       <div class="like-row">
+        <button class="post-share" type="button" aria-label="Share this post">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.5 2.5L10.8 13.2"/><path d="M21.5 2.5l-6.8 19-3.9-8.3-8.3-3.9z"/></svg>
+        </button>
+        <span class="post-share-note" aria-live="polite"></span>
         <button class="like-btn" type="button" data-like-id="sample-post" aria-pressed="false" hidden>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.2 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.5 3.7 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg>
         </button>
@@ -116,5 +129,6 @@
 <script src="../script.js"></script>
 <script src="../likes.js"></script>
 <script src="posts.js"></script>
+<script src="share.js"></script>
 </body>
 </html>

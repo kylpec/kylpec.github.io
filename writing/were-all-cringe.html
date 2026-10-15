@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" class="light post-page">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#F8F3EA" id="theme-color-meta">
+<script>
+  /* Restores the user's last-chosen theme before first paint, so
+     navigating between pages doesn't flash light and then flip to dark.
+     Runs as an inline, render-blocking script in <head> (not from
+     script.js, which loads at the end of body — too late to prevent the
+     flash) and only needs to handle the dark case, since every page's
+     <html> already ships with class="light" as its default. */
+  (function(){
+    try{
+      if(localStorage.getItem('theme') === 'dark'){
+        document.documentElement.classList.remove('light');
+        var tc = document.getElementById('theme-color-meta');
+        if(tc) tc.setAttribute('content', '#0E0E0E');
+      }
+    }catch(e){}
+  })();
+</script>
+<title>We’re All Cringe · Kyle Peck</title>
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="We’re All Cringe · Kyle Peck">
+<meta property="og:description" content="Even you!">
+<meta property="og:image" content="https://kylpec.com/writing/images/were-all-cringe.jpg">
+<meta property="og:image:width" content="1600">
+<meta property="og:image:height" content="900">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon-32x32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="../favicon-16x16.png" type="image/png" sizes="16x16">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Geist+Pixel:ELSH@1&family=Roboto+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <button class="theme-toggle mode-toggle" aria-label="Switch to dark mode" onclick="toggleTheme(this)">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4.3"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(45 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(90 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(135 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(180 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(225 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(270 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(315 12 12)"/></svg>
+  </button>
+  <span class="icon-btn-label icon-btn-label--mode" aria-hidden="true">MODE</span>
+  <button class="theme-toggle scroll-top" aria-label="Scroll to top">
+    <svg class="icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+  </button>
+  <span class="icon-btn-label icon-btn-label--top" aria-hidden="true">TOP</span>
+  <a class="post-back" href="../index.html">
+    <span>Back To Work</span>
+  </a>
+
+  <a class="brand-mark" href="../index.html">K<span class="kern-left">Y</span>LE PECK</a>
+
+  <main class="post-layout">
+    <nav class="post-index" aria-label="All writing"></nav>
+    <article class="post-main">
+    <div class="project-detail-head">
+      <h1>We’re All Cringe</h1>
+      <p class="project-subtitle">Even you!</p>
+      <p class="post-date"><time datetime="2026-10-15">10.15.2026</time></p>
+      <a class="post-music" href="https://open.spotify.com/track/1uvm0AND0hJOK0r7MP18Mq" target="_blank" rel="noopener">
+        <span class="post-music-label">Pairs well with</span>
+        <span class="post-music-row">
+          <img class="post-music-cover" src="https://i.scdn.co/image/ab67616d0000b2730a95e94bd739f160ad761a88" alt="" width="640" height="640">
+          <span class="post-music-text">
+            <span class="post-music-song">better late than never</span>
+            <span class="post-music-artist">almost monday</span>
+          </span>
+          <svg class="post-music-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>
+        </span>
+        <span class="visually-hidden">(opens in Spotify)</span>
+      </a>
+    </div>
+
+    <div class="post-hero">
+      <img src="images/were-all-cringe.jpg" alt="Kyle in a deadpan selfie, trees blurred behind him" width="1600" height="900">
+    </div>
+
+    <div class="project-detail-body">
+      <div class="post-body">
+        <p>I’ve been toying with this idea of… blogging? In a journal-ish type of way. An attempt to communicate my thoughts on whatever the hell comes across my desk in that moment—hopefully in a way that’s coherent, relatable, and thought-provoking. There are a few reasons why I’ve been tossing the idea around but before I get into that, I want to address the biggest hurdle that stopped me from publishing more of my own hot air into the void: it’s CRINGE. I kept revisiting this train of thought about how starting a blog, or Substack, in today’s climate feels cliche, in an embarrassing way. Like a str*ight man starting a podcast or becoming a DJ as a cry for attention or last-ditch effort to find purpose.</p>
+        <p>Was I afraid of being judged? What if I start rambling on about what I feel is a profound thought but is low-hanging fruit for someone else? Is it a difficult pill to swallow that a new-to-me thought is something others have already analyzed and processed? Is it just the siren of shame ringing in my ears again? As a gay man, that fear of shame seems to have rung through every corner of my life.</p>
+        <p>Then I felt the warmth of a new light that was initiated by a friend of mine who has posted multiple times on her Instagram story about embracing the ‘cringe’ (shoutout <a href="https://www.instagram.com/sidneylanecreative/" target="_blank" rel="noopener">Sidney</a> &lt;3). We’re all cringe. Every single person in my life has done, or said, something cringe. As an artist and designer, I feel that I’m always sitting at a crossroads of creating something that makes me feel something and the immediate insecurity of opening the door for someone else to judge that something. It’s stifling. And sad.</p>
+        <p>I like this line from <a href="https://www.theswaddle.com/author/saumyakalia" target="_blank" rel="noopener">Saumya Kalia</a>:</p>
+        <blockquote class="post-quote"><p>“If cringe is about shame, it is also an ode to enthusiasm and experiment, of finding levity in chaos and realizing the fleeting nature of it all.”</p></blockquote>
+        <p>So what if… I didn’t care? Why is that so difficult for me? What is my obsession with controlling how I’m perceived? Is now the time to release our inhibitions and feel the rain on our skin????</p>
+        <p>Back to motivation for writing—</p>
+        <ol class="post-list">
+          <li>Engaging with social media has evolved into something less desirable for me. Don’t get me wrong, I’ll continue to use and engage, but I think writing might be a way to get back to a more expressive, less daunting creative outlet. Untethered to jump-scare timelines and the constant question of “do I have the time, capacity, and energy to engage with this right now?” Kind of like a baby step back towards the MySpace/Tumblr/LiveJournal days without going full-Amish and deactivating my socials.</li>
+          <li>It becomes increasingly difficult to keep up with people as you age, especially those who live elsewhere. Social media has certainly played a role in remedying that, and we all know it takes effort to keep up with those you love. One fantasy I have is that someone is interested in what I have to say, gives it a read, and an entry opens the door for a more meaningful conversation down the road. “What you said about XYZ really resonated with me.” Or “I've actually been thinking about something similar.” As opposed to “How have things been going?” Or “Oh, I saw that on your Story.” Almost like an invitation to meet me where I’m at instead of only trying to catch up.</li>
+          <li>Over time, I’m trying to become more comfortable with being earnest. Somewhere along the way, I think a lot of us became uncomfortable with sincerity, or at least with expressing it openly. I wonder if that’s my own projection. When was the last time you did something wholeheartedly, without feeling the need to downplay it? Or said something genuinely meaningful without worrying about how it might be received?</li>
+        </ol>
+        <p>To clarify, the primary goal isn’t for me to touch on hard-hitting topics. I think I envision it as a simple, sporadic, sometimes-stupid, public journal. Maybe some days it’s deeper, some days it’s flippant. It’s been a long time since I’ve seen a therapist—sue me.</p>
+        <p>I like the idea of this effort helping to reclaim a bit of self-expression and how I connect with others in new ways so I’m giving it a go. I’ve started and dropped so many personal side-projects (RIP Semimade Home) so chances are I’ll be on to the next soon enough.</p>
+        <p>Oh, and the silly little heart button at the bottom is completely anonymous but it’s nice to know a human’s been here with me &lt;3</p>
+        <p class="post-signoff">xx kp</p>
+      </div>
+
+      <div class="like-row">
+        <button class="post-share" type="button" aria-label="Share this post">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.5 2.5L10.8 13.2"/><path d="M21.5 2.5l-6.8 19-3.9-8.3-8.3-3.9z"/></svg>
+        </button>
+        <span class="post-share-note" aria-live="polite"></span>
+        <button class="like-btn" type="button" data-like-id="were-all-cringe" aria-pressed="false" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.2 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.5 3.7 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg>
+        </button>
+        <span class="like-count" aria-hidden="true" hidden></span>
+      </div>
+    </div>
+    </article>
+  </main>
+</div>
+
+<footer class="site-foot">
+  <span class="site-signature">kylpec.com</span>
+  <div class="foot-group">
+    <div class="foot-left"><span class="clock-time">7:42:00 PM</span></div>
+    <div class="foot-social">
+      <a href="mailto:kylejopeck@gmail.com">Email</a>
+      <a href="https://linkedin.com/in/kylejpeck" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://instagram.com/bykylpec" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../script.js"></script>
+<script src="../likes.js"></script>
+<script src="posts.js"></script>
+<script src="share.js"></script>
+</body>
+</html>

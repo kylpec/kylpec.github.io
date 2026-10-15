@@ -2,3 +2,7 @@ source-files/
 Archive.zip
 original-mockup-backup.html
 .DS_Store
+
+# originals / scratch files in the blog image folder (only the resized copies go live)
+writing/images/IMG_*
+writing/images/_preview-delete-me.jpg

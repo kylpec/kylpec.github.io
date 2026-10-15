@@ -7,6 +7,7 @@
    NOTE: the entries marked placeholder are fake, for previewing the
    layout only — delete them before publishing real posts. */
 var POSTS = [
+  { title: 'We’re All Cringe', date: '2026-10-15', file: 'were-all-cringe.html', thumb: 'images/were-all-cringe-thumb.jpg' },
   { title: 'Sample Post Title', date: '2026-10-15', file: 'sample-post.html', thumb: 'images/placeholder-1-thumb.jpg' },
   { title: 'Placeholder: On Brand Systems', date: '2026-10-08', file: '#', thumb: 'images/placeholder-2-thumb.jpg', placeholder: true },
   { title: 'Placeholder: Type Pairings That Hold Up Under Pressure', date: '2026-10-02', file: '#', thumb: 'images/placeholder-3-thumb.jpg', placeholder: true },
@@ -43,6 +44,8 @@ var POSTS = [
   function buildSidebar(posts, here){
     var nav = document.querySelector('.post-index');
     if(!nav) return -1;
+    // nothing else to show yet (e.g. the very first post): hide the whole Archive section
+    if(!posts.some(function(p){ return p.file !== here; })){ nav.hidden = true; return -1; }
     var currentIndex = -1;
     var html = '<p class="post-index-year">Archive</p><ul>';
     posts.forEach(function(p, i){
