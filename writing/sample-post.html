@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" class="light post-page">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#F8F3EA" id="theme-color-meta">
+<script>
+  /* Restores the user's last-chosen theme before first paint, so
+     navigating between pages doesn't flash light and then flip to dark.
+     Runs as an inline, render-blocking script in <head> (not from
+     script.js, which loads at the end of body — too late to prevent the
+     flash) and only needs to handle the dark case, since every page's
+     <html> already ships with class="light" as its default. */
+  (function(){
+    try{
+      if(localStorage.getItem('theme') === 'dark'){
+        document.documentElement.classList.remove('light');
+        var tc = document.getElementById('theme-color-meta');
+        if(tc) tc.setAttribute('content', '#0E0E0E');
+      }
+    }catch(e){}
+  })();
+</script>
+<title>Sample Post · Kyle Peck</title>
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sample Post Title · Kyle Peck">
+<meta property="og:description" content="A one-line summary of the post goes here.">
+<meta property="og:image" content="https://kylpec.com/writing/images/placeholder-1.jpg">
+<meta property="og:image:width" content="1600">
+<meta property="og:image:height" content="900">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon-32x32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="../favicon-16x16.png" type="image/png" sizes="16x16">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Geist+Pixel:ELSH@1&family=Roboto+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <button class="theme-toggle mode-toggle" aria-label="Switch to dark mode" onclick="toggleTheme(this)">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4.3"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(45 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(90 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(135 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(180 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(225 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(270 12 12)"/><rect x="11.1" y="1.6" width="1.8" height="3.6" rx="0.9" transform="rotate(315 12 12)"/></svg>
+  </button>
+  <span class="icon-btn-label icon-btn-label--mode" aria-hidden="true">MODE</span>
+  <button class="theme-toggle scroll-top" aria-label="Scroll to top">
+    <svg class="icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+  </button>
+  <span class="icon-btn-label icon-btn-label--top" aria-hidden="true">TOP</span>
+  <a class="post-back" href="../index.html">
+    <span>Back To Work</span>
+  </a>
+
+  <a class="brand-mark" href="../index.html">K<span class="kern-left">Y</span>LE PECK</a>
+
+  <main class="post-layout">
+    <nav class="post-index" aria-label="All writing"></nav>
+    <article class="post-main">
+    <div class="project-detail-head">
+      <div class="post-music">
+        <iframe data-testid="embed-iframe" title="Spotify player" style="border-radius:12px" src="https://open.spotify.com/embed/track/2LfIvkV7kBvqo3tx1H9sqw?utm_source=generator&si=75b6a4548c5f43e4" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      </div>
+      <h1>Sample Post Title</h1>
+      <p class="project-subtitle">A one-line summary of the post goes here.</p>
+      <p class="post-date"><time datetime="2026-10-15">10.15.2026</time></p>
+    </div>
+
+    <div class="post-hero">
+      <img src="images/placeholder-1.jpg" alt="Placeholder hero image" width="1600" height="900">
+    </div>
+
+    <div class="project-detail-body">
+      <div class="post-body">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Maecenas faucibus mollis interdum, sed posuere consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum.</p>
+        <p>Vestibulum id ligula porta felis euismod semper. Donec ullamcorper nulla non metus auctor fringilla. Aenean lacinia bibendum nulla sed consectetur. Nullam quis risus eget urna mollis ornare vel eu leo. Curabitur blandit tempus porttitor, and etiam porta sem malesuada magna mollis euismod.</p>
+        <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Sed posuere consectetur est at lobortis. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.</p>
+        <p>Nulla vitae elit libero, a pharetra augue. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Donec sed odio dui.</p>
+        <p>Maecenas sed diam eget risus varius blandit sit amet non magna. Integer posuere erat a ante venenatis dapibus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam, pellentesque ornare sem lacinia quam venenatis vestibulum.</p>
+        <p>Etiam porta sem malesuada magna mollis euismod. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Sed posuere consectetur est at lobortis.</p>
+        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh. Vestibulum id ligula porta felis euismod semper, nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+        <p>Aenean lacinia bibendum nulla sed consectetur. Curabitur blandit tempus porttitor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Donec ullamcorper nulla non metus auctor fringilla, and maecenas faucibus mollis interdum.</p>
+        <p>Nullam quis risus eget urna mollis ornare vel eu leo. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Cras mattis consectetur purus sit amet fermentum.</p>
+        <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Nulla vitae elit libero, a pharetra augue. Sed posuere consectetur est at lobortis.</p>
+        <p>Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Etiam porta sem malesuada magna mollis euismod. Maecenas sed diam eget risus varius blandit sit amet non magna. Donec sed odio dui, cum sociis natoque penatibus et magnis dis parturient montes.</p>
+        <p>Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      </div>
+
+      <div class="like-row">
+        <button class="like-btn" type="button" data-like-id="sample-post" aria-pressed="false" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.2 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.5 3.7 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg>
+        </button>
+        <span class="like-count" aria-hidden="true" hidden></span>
+      </div>
+    </div>
+    </article>
+  </main>
+</div>
+
+<footer class="site-foot">
+  <span class="site-signature">kylpec.com</span>
+  <div class="foot-group">
+    <div class="foot-left"><span class="clock-time">7:42:00 PM</span></div>
+    <div class="foot-social">
+      <a href="mailto:kylejopeck@gmail.com">Email</a>
+      <a href="https://linkedin.com/in/kylejpeck" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://instagram.com/bykylpec" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../script.js"></script>
+<script src="../likes.js"></script>
+<script src="posts.js"></script>
+</body>
+</html>

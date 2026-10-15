@@ -274,7 +274,9 @@ window.addEventListener('resize', updateLastRowBorders);
 function isLightMode(){ return document.documentElement.classList.contains('light'); }
 
 function updateBgFade(){
-  const color = isLightMode() ? '#F8F3EA' : '#0E0E0E';
+  // pages can set their own fixed background via --page-bg (blog posts do)
+  const pageBg = getComputedStyle(document.documentElement).getPropertyValue('--page-bg').trim();
+  const color = pageBg || (isLightMode() ? '#F8F3EA' : '#0E0E0E');
   document.documentElement.style.backgroundColor = color;
   document.body.style.backgroundColor = color;
   // keeps iOS/Android's own browser-chrome color (status bar, address

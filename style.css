@@ -2311,3 +2311,167 @@ html:not(.light) .identity-showcase--full img[src*="smiledirectclub-logo"]{
   .work-head{ padding:24px var(--gutter); }
   .hero .location-line{ padding-bottom:300px; }
 }
+
+/* ---------- Blog like button (likes.js) ---------- */
+.like-row{ display:flex; align-items:center; justify-content:flex-end; gap:12px; margin:64px 0 24px; }
+.like-btn{
+  --like-red:#FF2970;
+  width:48px; height:48px; flex:none; display:inline-flex; align-items:center; justify-content:center; padding:0; cursor:pointer;
+  color:var(--ink); background:transparent; border:1px solid var(--ink); border-radius:50%;
+  transition:background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+.like-btn[hidden]{ display:none; }
+.like-btn svg{ width:20px; height:20px; display:block; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linejoin:round; transition:fill .15s ease; }
+@media (hover:hover){ .like-btn:not(.is-liked):hover{ background:var(--hover-wash); } .like-btn.is-liked:hover{ opacity:.85; } }
+.like-btn:focus-visible{ outline:2px solid var(--accent-blue); outline-offset:3px; }
+.like-btn.is-liked{ background:var(--like-red); border-color:var(--like-red); color:#FFFFFF; }
+.like-btn.is-liked svg{ fill:currentColor; }
+.like-btn{ position:relative; }
+.like-btn.just-liked{ animation:like-btn-pop .5s cubic-bezier(.3,1.5,.5,1); }
+.like-btn.just-liked svg{ animation:like-pop .55s cubic-bezier(.3,1.6,.5,1); }
+@keyframes like-btn-pop{ 0%{transform:scale(1)} 25%{transform:scale(.86)} 60%{transform:scale(1.1)} 100%{transform:scale(1)} }
+@keyframes like-pop{ 0%{transform:scale(.4)} 50%{transform:scale(1.4)} 75%{transform:scale(.9)} 100%{transform:scale(1)} }
+.like-burst{ position:absolute; left:50%; top:50%; width:0; height:0; pointer-events:none; }
+.lb-ring{
+  position:absolute; left:-24px; top:-24px; width:48px; height:48px; border-radius:50%;
+  border:3px solid var(--like-red); animation:lb-ring .55s cubic-bezier(.2,.7,.3,1) forwards;
+}
+@keyframes lb-ring{ 0%{ transform:scale(.9); opacity:1; } 100%{ transform:scale(2.1); opacity:0; border-width:0; } }
+.lb-dot{
+  position:absolute; left:-4px; top:-4px; width:8px; height:8px; border-radius:50%;
+  background:var(--like-red); opacity:0;
+  animation:lb-dot .65s cubic-bezier(.15,.75,.3,1) forwards;
+}
+.lb-dot--sm{ left:-2.5px; top:-2.5px; width:5px; height:5px; background:#FF8FB3; }
+@keyframes lb-dot{
+  0%  { transform:rotate(var(--a)) translateY(-20px) scale(1); opacity:1; }
+  100%{ transform:rotate(var(--a)) translateY(calc(-20px - var(--d))) scale(0); opacity:0; }
+}
+@media (prefers-reduced-motion:reduce){ .like-btn.just-liked, .like-btn.just-liked svg{ animation:none; } .like-burst{ display:none; } }
+.like-count{ display:inline-grid; overflow:hidden; line-height:1.4; font-family:var(--mono2); font-size:14px; font-weight:500; color:var(--ink); font-variant-numeric:tabular-nums; }
+.lc-num{ grid-area:1/1; }
+.lc-in.lc-up{ animation:lc-in-up .4s cubic-bezier(.2,.8,.2,1) both; }
+.lc-out.lc-up{ animation:lc-out-up .4s cubic-bezier(.2,.8,.2,1) both; }
+.lc-in.lc-down{ animation:lc-in-down .4s cubic-bezier(.2,.8,.2,1) both; }
+.lc-out.lc-down{ animation:lc-out-down .4s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes lc-in-up{ from{ transform:translateY(100%); opacity:0; } to{ transform:none; opacity:1; } }
+@keyframes lc-out-up{ from{ transform:none; opacity:1; } to{ transform:translateY(-100%); opacity:0; } }
+@keyframes lc-in-down{ from{ transform:translateY(-100%); opacity:0; } to{ transform:none; opacity:1; } }
+@keyframes lc-out-down{ from{ transform:none; opacity:1; } to{ transform:translateY(100%); opacity:0; } }
+.like-count[hidden]{ display:none; }
+.like-row .like-count{ order:-1; } /* sits left of the heart so the heart never shifts */
+.post-body{ max-width:680px; }
+.post-body p{ font-size:18px; line-height:1.65; margin:0 0 1.2em; }
+.post-date{ font-family:var(--mono2); font-size:12px; letter-spacing:.03em; text-transform:uppercase; color:var(--ink-soft); margin-top:16px; }
+/* blog post: one reading column, centered on the screen, text left-aligned.
+   .post-layout is a 3-column grid (1fr | 680px | 1fr) so the post stays
+   exactly centered; the sidebar lives in the left column on wide screens. */
+.post-layout{ display:grid; grid-template-columns:minmax(0,680px); justify-content:center; }
+.post-main{ grid-column:1; grid-row:1; min-width:0; }
+.post-main .post-body{ max-width:none; }
+/* "Archive": the other posts in one row below the post that scrolls
+   sideways, running edge to edge of the screen; the first card lines up
+   with the post's left edge. Past 10 posts, "View All" -> archive.html. */
+.post-index{ grid-column:1; grid-row:2; margin:24px 0 72px; padding-top:32px; }
+.post-index-year{
+  font-family:var(--sans); font-size:12px; font-weight:500; letter-spacing:.01em; color:var(--ink);
+  padding-bottom:8px; border-bottom:1px solid var(--line); margin:0 0 10px;
+}
+.post-index ul{
+  list-style:none; margin:0; padding-top:0; padding-bottom:0;
+  display:flex; gap:12px; overflow-x:auto; overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory; scrollbar-width:none;
+  width:var(--vw100, 100vw); margin-left:calc(50% - var(--vw100, 100vw) / 2);
+  padding-left:calc(var(--vw100, 100vw) / 2 - 50%); padding-right:calc(var(--vw100, 100vw) / 2 - 50%);
+}
+.post-index ul::-webkit-scrollbar{ display:none; }
+/* soft fade on the right edge hints there's more to scroll; posts.js
+   adds .at-end (removing the fade) once there's nothing further right */
+@property --row-fade{ syntax:'<percentage>'; inherits:false; initial-value:0%; }
+.post-index ul{
+  --row-fade:0%; /* opacity of the far-right edge: 0% = fully faded */
+  -webkit-mask-image:linear-gradient(to right, #000 calc(100% - 80px), rgb(0 0 0 / var(--row-fade)));
+          mask-image:linear-gradient(to right, #000 calc(100% - 80px), rgb(0 0 0 / var(--row-fade)));
+  transition:--row-fade .5s ease;
+}
+.post-index ul.at-end{ --row-fade:100%; }
+/* snap stop = the row's left padding; set from posts.js (CSS can't express it) */
+.post-index li{ flex:0 0 clamp(150px, 42vw, 220px); scroll-snap-align:start; }
+.post-index li.is-current, .post-index li.is-overflow{ display:none; }
+/* each post is a small card: 16:9 photo on top, title underneath */
+.post-index a{ display:grid; grid-template-columns:minmax(0,1fr); column-gap:10px; row-gap:6px; align-items:center; color:var(--ink-soft); cursor:pointer; transition:color .15s ease; }
+.post-index-thumb{ grid-column:1 / -1; width:100%; height:auto; aspect-ratio:16/9; object-fit:cover; display:block; background:var(--panel); transition:opacity .15s ease; }
+.post-index-name{ min-width:0; font-family:var(--sans); font-size:12px; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.post-index-arrow{ flex:none; width:10px; height:10px; display:block; transition:transform .2s ease; }
+@media (hover:hover){
+  .post-index a:hover{ color:var(--ink); }
+  .post-index a:hover .post-index-thumb{ opacity:.85; }
+  .post-index a:hover .post-index-arrow{ transform:translateX(2px); }
+}
+.post-index-all{
+  display:block; width:max-content; margin:24px auto 0;
+  font-family:var(--sans); font-size:12px; font-weight:500; letter-spacing:.01em; color:var(--ink);
+  text-decoration:underline; text-underline-offset:3px; cursor:pointer; transition:opacity .15s ease;
+}
+.post-index-all:hover, .post-index-all:focus-visible{ opacity:.6; }
+/* tablet & desktop: the Archive section spans the screen between the side
+   margins instead of bleeding off the right edge. Cards size to fit a whole
+   number across (4 on tablet, 6 on desktop, matching the Archive page);
+   any extras scroll sideways within that width. */
+@media (min-width:640px){
+  .post-index{
+    width:calc(var(--vw100, 100vw) - 2 * var(--gutter));
+    margin-left:calc(50% - var(--vw100, 100vw) / 2 + var(--gutter));
+  }
+  .post-index ul{ width:100%; margin-left:0; padding-left:0; padding-right:0; gap:16px; }
+  .post-index li{ flex:0 0 calc((100% - 3 * 16px) / 4); }
+}
+@media (min-width:1280px){
+  .post-index li{ flex:0 0 calc((100% - 5 * 16px) / 6); }
+}
+
+/* ---------- Blog pages (html.post-page) ----------
+   Own background, no global nav or brand mark — just a back link and
+   the MODE toggle. --page-bg is also read by updateBgFade() in script.js. */
+html.post-page{ --page-bg:#0E0E0E; --bg:var(--page-bg); --bg-start:var(--page-bg); }
+html.post-page.light{ --page-bg:#FCFBF8; }
+/* styled to match .nav-links a: same type, underline, blend, and hover
+   fade (no current-page dot). Sits at the top-left of the page and
+   scrolls away with it rather than staying pinned like the main nav. */
+.post-back{
+  position:absolute; top:var(--gutter); left:var(--gutter); z-index:60;
+  display:flex; align-items:center; line-height:1;
+  font-family:var(--sans); font-size:12px; font-weight:500; letter-spacing:.01em;
+  color:#fff; mix-blend-mode:difference;
+  transition:opacity .15s ease;
+}
+.post-back span{ text-decoration:underline; text-underline-offset:3px; }
+.post-back:hover, .post-back:focus-visible{ opacity:.6; }
+/* hero image under the title block, full width of the reading column */
+.post-hero{ margin-top:40px; aspect-ratio:16/9; overflow:hidden; background:var(--panel); }
+.post-hero img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+/* ---------- Writing archive page (writing/archive.html) ---------- */
+.archive-main{ padding-bottom:96px; }
+.archive-head{ padding-top:56px; display:flex; align-items:baseline; justify-content:space-between; gap:16px; }
+.archive-head h1{ font-family:var(--sans); font-weight:400; font-size:32px; line-height:1.05; letter-spacing:-.03em; color:var(--ink); }
+.archive-count{ font-family:var(--sans); font-size:12px; font-weight:500; color:var(--ink-soft); }
+.post-archive-grid{
+  list-style:none; margin:40px 0 0; padding:0;
+  display:grid; grid-template-columns:repeat(6, minmax(0,1fr)); gap:36px 16px;
+}
+.post-archive-grid a{ display:grid; grid-template-columns:minmax(0,1fr); column-gap:10px; row-gap:6px; align-items:center; color:var(--ink-soft); cursor:pointer; transition:color .15s ease; }
+.post-archive-grid .post-index-thumb{ grid-column:1 / -1; width:100%; height:auto; aspect-ratio:16/9; object-fit:cover; display:block; background:var(--panel); transition:opacity .15s ease; }
+.post-archive-grid .post-index-name{ min-width:0; font-family:var(--sans); font-size:13px; line-height:1.35; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.post-archive-grid .post-index-arrow{ width:10px; height:10px; display:block; transition:transform .2s ease; }
+.post-card-date{ grid-column:1 / -1; margin-top:-2px; font-family:var(--mono2); font-size:11px; letter-spacing:.03em; color:var(--ink-soft); }
+@media (hover:hover){
+  .post-archive-grid a:hover .post-index-thumb{ opacity:.85; }
+  .post-archive-grid a:hover .post-index-arrow{ transform:translateX(2px); }
+}
+@media (max-width:1279px){ .post-archive-grid{ grid-template-columns:repeat(4, minmax(0,1fr)); } }
+@media (max-width:899px){ .post-archive-grid{ grid-template-columns:repeat(3, minmax(0,1fr)); } }
+@media (max-width:639px){ .post-archive-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:28px 12px; } }
+/* Spotify (or other) song embed at the top of a post */
+.post-music{ margin-bottom:40px; }
+.post-music iframe{ display:block; width:100%; }
