@@ -97,7 +97,7 @@ html{ overflow-x:hidden; }
    this standard property (Chrome/Firefox since 2022, Safari since v16,
    so effectively universal at this point). overscroll-behavior-y rather
    than the shorthand since only vertical bounce is the issue here. */
-html,body{ overscroll-behavior-y:none; }
+html{ overscroll-behavior-y:none; }
 body{
   -webkit-font-smoothing:antialiased; font-size:16px; line-height:1.5;
   position:relative; overflow-x:hidden;
